@@ -115,23 +115,15 @@ function createInitialTreesAndHive() {
   }
 
   // Main animation loop
-  function animate(time) {
+  function animate() {
     requestAnimationFrame(animate);
-
-    // Calculate delta time for smooth animations
-    const deltaTime = time - lastTime;
-    lastTime = time;
 
     // Update bee movement
     updateBeeMovement();
 
     // Update flowers
     updateBeeCellAndManageFlowers();
-
-    // Update grass animation
-    if (grass && grass.material) {
-      updateGrass(grass, deltaTime * 0.001); // Convert to seconds
-    }
+    
 
     // Render scene
     renderer.render(scene, camera);

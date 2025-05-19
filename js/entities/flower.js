@@ -1,91 +1,153 @@
 // Flower entity creation and management
 
-// Create a reusable petal shape geometry for all flowers
+// Define shared geometries for petals and leaves
 let sharedPetalGeometry;
+let sharedLeafGeometry;
+
+// Create a more detailed petal shape with extrusion for thickness
 function createPetalShape() {
-  // Create a simplified low-poly petal shape
   const petalShape = new THREE.Shape();
   const width = 0.2;
   const height = 0.5;
   
-  // Simplify the shape for low-poly look - use fewer points
+  // Define a more organic, curved petal shape
   petalShape.moveTo(0, 0);
-  petalShape.lineTo(width / 2, height / 2);
+  petalShape.lineTo(width / 3, height / 3);
+  petalShape.lineTo(width / 2, 2 * height / 3);
+  petalShape.lineTo(width / 3, height);
   petalShape.lineTo(0, height);
-  petalShape.lineTo(-width / 2, height / 2);
+  petalShape.lineTo(-width / 3, height);
+  petalShape.lineTo(-width / 2, 2 * height / 3);
+  petalShape.lineTo(-width / 3, height / 3);
   petalShape.lineTo(0, 0);
   
-  return new THREE.ShapeGeometry(petalShape);
+  const extrudeSettings = {
+    steps: 1,
+    depth: 0.02,
+    bevelEnabled: false
+  };
+  
+  return new THREE.ExtrudeGeometry(petalShape, extrudeSettings);
+}
+
+// Create a leaf shape with extrusion
+function createLeafShape() {
+  const leafShape = new THREE.Shape();
+  const width = 0.2;
+  const height = 0.4;
+  
+  leafShape.moveTo(0, 0);
+  leafShape.lineTo(width / 2, height / 2);
+  leafShape.lineTo(0, height);
+  leafShape.lineTo(-width / 2, height / 2);
+  leafShape.lineTo(0, 0);
+  
+  const extrudeSettings = {
+    steps: 1,
+    depth: 0.01,
+    bevelEnabled: false
+  };
+  
+  return new THREE.ExtrudeGeometry(leafShape, extrudeSettings);
 }
 
 // Create a single flower at the given position
 function createFlower(x, z, cellKey) {
   try {
-    // Initialize shared petal geometry if needed
+    // Initialize shared geometries if needed
     if (!sharedPetalGeometry) {
       sharedPetalGeometry = createPetalShape();
+      sharedLeafGeometry = createLeafShape();
     }
   
     const flowerGroup = new THREE.Group();
     flowerGroup.position.set(x, 0, z);
     
-    // Create stem - thinner and taller for aesthetic
+    // Create stem
     const stemHeight = 1.0 + Math.random() * 0.6;
     const stemGeometry = new THREE.CylinderGeometry(0.03, 0.05, stemHeight, LOW_POLY_SEGMENTS);
-    
-    // Using MeshPhongMaterial which supports flatShading
     const stemMaterial = new THREE.MeshPhongMaterial({ 
       color: 0x2ecc71,
       flatShading: true
     });
-    
     const stem = new THREE.Mesh(stemGeometry, stemMaterial);
     stem.position.y = stemHeight / 2;
     stem.castShadow = true;
     flowerGroup.add(stem);
   
-    // Create petals - more stylized for low-poly look
-    const petalsGroup = new THREE.Group();
-    petalsGroup.position.y = stemHeight;
-    flowerGroup.add(petalsGroup);
-    
-    // Random pastel color from our new palette
+    // Random pastel color for petals
     const petalColorHex = FLOWER_PETAL_COLORS[
       Math.floor(Math.random() * FLOWER_PETAL_COLORS.length)
     ];
-    
-    // Using MeshPhongMaterial which supports flatShading
     const flowerPetalMaterial = new THREE.MeshPhongMaterial({
       color: petalColorHex,
       side: THREE.DoubleSide,
       flatShading: true
     });
     
-    // Add petals in a circle - fewer for better performance
+    // Create outer petals
+    const outerPetalsGroup = new THREE.Group();
+    outerPetalsGroup.position.y = stemHeight;
     const numPetals = 5 + Math.floor(Math.random() * 3);
     for (let i = 0; i < numPetals; i++) {
       const petal = new THREE.Mesh(sharedPetalGeometry, flowerPetalMaterial);
       const angle = (i / numPetals) * Math.PI * 2;
+      petal.position.x = Math.sin(angle) * 0.2;
+      petal.position.z = Math.cos(angle) * 0.2;
+      petal.rotation.y = -angle + Math.PI / 2;
+      petal.rotation.x = Math.PI / 4;
+      petal.scale.set(1 + Math.random() * 0.2 - 0.1, 1 + Math.random() * 0.2 - 0.1, 1);
+      petal.castShadow = true;
+      outerPetalsGroup.add(petal);
+    }
+    flowerGroup.add(outerPetalsGroup);
+    
+    // Create inner petals for a fuller look
+    const innerPetalsGroup = new THREE.Group();
+    innerPetalsGroup.position.y = stemHeight + 0.05;
+    for (let i = 0; i < numPetals; i++) {
+      const petal = new THREE.Mesh(sharedPetalGeometry, flowerPetalMaterial);
+      const angle = (i / numPetals) * Math.PI * 2 + Math.PI / numPetals;
       petal.position.x = Math.sin(angle) * 0.15;
       petal.position.z = Math.cos(angle) * 0.15;
       petal.rotation.y = -angle + Math.PI / 2;
-      petal.rotation.x = Math.PI / 3; // More upright petals
+      petal.rotation.x = Math.PI / 3;
+      petal.scale.set(0.8 + Math.random() * 0.2 - 0.1, 0.8 + Math.random() * 0.2 - 0.1, 1);
       petal.castShadow = true;
-      petalsGroup.add(petal);
+      innerPetalsGroup.add(petal);
     }
+    flowerGroup.add(innerPetalsGroup);
   
-    // Create nectar center - brighter yellow
-    const nectarGeometry = new THREE.TetrahedronGeometry(0.08, 0); // Low-poly center
+    // Create nectar center with improved geometry and emissive material
+    const nectarGeometry = new THREE.IcosahedronGeometry(0.08, 0);
     const nectarMaterial = new THREE.MeshLambertMaterial({ 
-      color: 0xfdcb6e
-      // MeshLambertMaterial doesn't need flatShading
+      color: 0xfdcb6e,
+      emissive: 0xffd700,
+      emissiveIntensity: 0.5
     });
-    
     const nectarCenter = new THREE.Mesh(nectarGeometry, nectarMaterial);
-    nectarCenter.position.y = stemHeight + 0.05;
+    nectarCenter.position.y = stemHeight + 0.1;
     nectarCenter.name = "nectarCenter";
     nectarCenter.castShadow = true;
     flowerGroup.add(nectarCenter);
+  
+    // Add leaves to the stem
+    const leafMaterial = new THREE.MeshPhongMaterial({
+      color: 0x2ecc71,
+      side: THREE.DoubleSide,
+      flatShading: true
+    });
+    const numLeaves = Math.floor(Math.random() * 2) + 1; // 1 or 2 leaves
+    for (let i = 0; i < numLeaves; i++) {
+      const leaf = new THREE.Mesh(sharedLeafGeometry, leafMaterial);
+      const heightFraction = 0.3 + Math.random() * 0.4;
+      leaf.position.y = stemHeight * heightFraction;
+      leaf.position.x = (Math.random() - 0.5) * 0.2;
+      leaf.position.z = (Math.random() - 0.5) * 0.2;
+      leaf.rotation.y = Math.random() * Math.PI * 2;
+      leaf.castShadow = true;
+      flowerGroup.add(leaf);
+    }
   
     // Store metadata for the flower
     flowerGroup.userData = {
@@ -94,8 +156,8 @@ function createFlower(x, z, cellKey) {
       petalMaterial: flowerPetalMaterial,
       nectarCenterMesh: nectarCenter,
       originalNectarScale: nectarCenter.scale.clone(),
-      petalsGroup: petalsGroup,
-      cellKey: cellKey, // Store which cell this flower belongs to
+      petalsGroup: outerPetalsGroup, // Storing outer petals group for compatibility
+      cellKey: cellKey
     };
     
     scene.add(flowerGroup);
@@ -137,13 +199,11 @@ function manageFlowers(currentCellX, currentCellZ) {
         newPopulatedCells.add(cellKey);
   
         if (!populatedCells.has(cellKey) && flowers.length < MAX_FLOWERS) {
-          // Increase flower density for more vibrant fields
           for (let k = 0; k < FLOWER_DENSITY_PER_CELL * 2; k++) {
             if (flowers.length >= MAX_FLOWERS) break;
             const flowerX = (cellX + Math.random()) * CELL_SIZE;
             const flowerZ = (cellZ + Math.random()) * CELL_SIZE;
   
-            // Simple check to avoid spawning flowers on the hive tree base
             if (
               hiveTree &&
               Math.abs(flowerX - hiveTree.position.x) < 5 &&
@@ -161,7 +221,7 @@ function manageFlowers(currentCellX, currentCellZ) {
       }
     }
     
-    populatedCells = newPopulatedCells; // Update the set of active cells
+    populatedCells = newPopulatedCells;
   
     // Remove far flowers
     const flowersToRemove = [];
@@ -174,7 +234,6 @@ function manageFlowers(currentCellX, currentCellZ) {
     }
     
     for (const index of flowersToRemove.sort((a, b) => b - a)) {
-      // Sort to remove from end
       flowers.splice(index, 1);
     }
   } catch (error) {
