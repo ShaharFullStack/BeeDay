@@ -1,55 +1,40 @@
 // World creation and management
 
 // Create and set up the basic world elements (ground, lighting)
-function setupWorld(scene) {
-  if (!scene) {
-    console.error("setupWorld: scene parameter is missing");
-    return;
-  }
-  setupLighting(scene);
-  // Note: createGround is now called directly from game.js
+function setupWorld() {
+  setupLighting();
+  createGround(1000); // Much larger ground plane
 }
 
 // Setup scene lighting
-function setupLighting(scene) {
-  if (!scene) {
-    console.error("setupLighting: scene parameter is missing");
-    return;
-  }
+function setupLighting() {
+  // Brighter ambient light for pastel look
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+  scene.add(ambientLight);
   
-  try {
-    // Brighter ambient light for pastel look
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
-    scene.add(ambientLight);
-    
-    // Softer directional light
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(70, 100, 60);
-    directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.width = 2048;
-    directionalLight.shadow.mapSize.height = 2048;
-    directionalLight.shadow.camera.near = 0.5;
-    directionalLight.shadow.camera.far = 300;
-    directionalLight.shadow.camera.left = -150;
-    directionalLight.shadow.camera.right = 150;
-    directionalLight.shadow.camera.top = 150;  
-    directionalLight.shadow.camera.bottom = -150;
-    scene.add(directionalLight);
-    
-    // Set fog to match sky color for better depth
-    scene.fog = new THREE.Fog(0x74b9ff, 100, 400);
-    
-    // Set sky color
-    scene.background = new THREE.Color(0x74b9ff);
-    
-    console.log("Lighting setup complete");
-  } catch (error) {
-    console.error("Error in setupLighting:", error);
-  }
+  // Softer directional light
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  directionalLight.position.set(70, 100, 60);
+  directionalLight.castShadow = true;
+  directionalLight.shadow.mapSize.width = 2048;
+  directionalLight.shadow.mapSize.height = 2048;
+  directionalLight.shadow.camera.near = 0.5;
+  directionalLight.shadow.camera.far = 300;
+  directionalLight.shadow.camera.left = -150;
+  directionalLight.shadow.camera.right = 150;
+  directionalLight.shadow.camera.top = 150;
+  directionalLight.shadow.camera.bottom = -150;
+  scene.add(directionalLight);
+  
+  // Set fog to match sky color for better depth
+  scene.fog = new THREE.Fog(SKY_COLOR, 100, 400);
+  
+  // Set sky color
+  scene.background = new THREE.Color(SKY_COLOR);
 }
 
 // Create the ground plane with hexagonal pattern
-function createGround(scene, size) {
+function createGround(size) {
   try {
     // Create ground plane with a subtle grid for the low-poly look
     const segmentCount = 100;
@@ -67,38 +52,28 @@ function createGround(scene, size) {
     }
     
     groundGeometry.computeVertexNormals();
-      // Using MeshPhongMaterial which supports flatShading
+    
+    // Using MeshPhongMaterial which supports flatShading
     const groundMaterial = new THREE.MeshPhongMaterial({
-      color: 0x81ecec,
+      color: GROUND_COLOR,
       flatShading: true,
       wireframe: false
     });
     
-    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground = new THREE.Mesh(groundGeometry, groundMaterial);
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     scene.add(ground);
     
     // Add hexagon pattern overlay
-    createHexagonPattern(scene, size);
-    
-    return ground;
+    createHexagonPattern(size);
   } catch (error) {
     console.error("Error creating ground:", error);
-    
-    // Fallback to a simple ground in case of error
-    const groundGeometry = new THREE.PlaneGeometry(size, size);
-    const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x55aa55 });
-    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-    ground.rotation.x = -Math.PI / 2;
-    ground.receiveShadow = true;
-    scene.add(ground);
-    return ground;
   }
 }
 
 // Create hexagonal pattern overlay for the ground
-function createHexagonPattern(scene, size) {
+function createHexagonPattern(size) {
   try {
     const hexSize = 10;
     const hexGeometry = new THREE.CircleGeometry(hexSize, 6);
