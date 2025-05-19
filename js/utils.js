@@ -38,6 +38,7 @@ function showMessage(text, duration = 2000) {
     if (messageBox) {
       messageBox.textContent = text;
       messageBox.style.display = "block";
+      messageBox.style.top = "50px"; // Adjust position if needed
       clearTimeout(messageTimeout);
       messageTimeout = setTimeout(() => {
         messageBox.style.display = "none";
