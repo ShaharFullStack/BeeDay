@@ -18,16 +18,11 @@
       <div class="title-container">
         <h1>Bee Day!</h1>
         <h2>Honey Hunt</h2>
-        <div id="pointer-lock-info" style="display: none">
-          Click the screen to enable mouse control
-        </div>
+
         <button id="start-game-btn">Bzzz...🐝</button>
       </div>
-    </div>
-
-    <!-- Game Container (hidden initially) -->
+    </div>    <!-- Game Container (hidden initially) -->
     <div id="game-container" style="display: none">
-      <div id="game-container" style="display: none">
         <div id="ui-container">
           <div>
             Nectar Carried: <span id="nectar-carried">0</span> /
@@ -59,9 +54,10 @@
         </div>
         <div id="mobile-buttons">
           <div id="action-button">COLLECT / DEPOSIT</div>
-        </div>    <!-- Error message for debugging -->
+        </div>
+        <!-- Error message for debugging -->
         <div id="error-message"></div>
-      </div>    </div>
+    </div>
 
     <!-- Load THREE.js and dependencies first -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
