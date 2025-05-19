@@ -21,7 +21,7 @@ canvas {
 }
 
 /* Homepage Styles */
-#home-page {
+#home-page, #login-page {
   position: fixed;
   top: 0;
   left: 0;
@@ -33,6 +33,81 @@ canvas {
   justify-content: center;
   align-items: center;
   z-index: 1000;
+}
+
+/* Login Page Styles */
+#login-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.login-btn {
+  background-color: #ffffff;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.login-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+#google-login-btn {
+  background-color: #ffffff;
+  color: #333;
+}
+
+#guest-login-btn {
+  background-color: #74b9ff;
+  color: #fff;
+}
+
+#user-profile {
+  text-align: center;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+#user-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+#user-name {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #ffffff;
+}
+
+.small-btn {
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 15px;
+  cursor: pointer;
+  margin-top: 10px;
 }
 
 .title-container {
@@ -58,7 +133,7 @@ canvas {
   color: #ff9ff3; /* Pink color to match cherry blossoms */
 }
 
-#start-game-btn {
+.start-game-btn {
   background-color: #fdcb6e; /* Match bee color */
   color: #333;
   border: none;
@@ -71,13 +146,43 @@ canvas {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-#start-game-btn:hover {
+.start-game-btn:hover {
   background-color: #ffeaa7; /* Lighter yellow on hover */
   transform: scale(1.05);
 }
 
-#start-game-btn:active {
+.start-game-btn:active {
   transform: scale(0.98);
+}
+
+/* Multiplayer Toggle */
+#multiplayer-toggle {
+  margin: 15px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffeaa7;
+}
+
+#multiplayer-toggle label {
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+#multiplayer-toggle input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+#player-welcome {
+  color: #ffffff;
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+#home-logout-btn {
+  margin-top: 15px;
 }
 
 /* Game UI Styles */
@@ -102,6 +207,23 @@ canvas {
   font-size: 16px;
   z-index: 10;
   pointer-events: auto; /* Make the UI clickable */
+}
+
+#player-status {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #ffeaa7;
+}
+
+/* Player name update animation */
+@keyframes nameHighlight {
+  0% { color: inherit; }
+  30% { color: #FFD700; text-shadow: 0 0 5px rgba(255, 215, 0, 0.8); }
+  100% { color: inherit; }
+}
+
+.name-updated {
+  animation: nameHighlight 1.5s ease-out;
 }
 
 #controls-info {
@@ -378,9 +500,79 @@ body.mobile-device #pointer-lock-info {
   }
   #joystick-left,
   #joystick-right,
-  #mobile-buttons,
-  #mobile-height-controls,
+  #mobile-buttons,  #mobile-height-controls,
   .mobile-controls {
     display: none !important; /* Never show on desktop */
   }
+}
+
+/* Multiplayer Styles */
+#leaderboard {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  padding: 10px;
+  color: white;
+  min-width: 200px;
+  z-index: 100;
+}
+
+#leaderboard h3 {
+  margin: 0 0 10px 0;
+  text-align: center;
+  font-size: 16px;
+  color: #FFD700;
+}
+
+.leaderboard-entry {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  padding: 3px 5px;
+  border-radius: 4px;
+}
+
+.leaderboard-entry.current-player {
+  background-color: rgba(255, 215, 0, 0.3);
+  font-weight: bold;
+}
+
+.leaderboard-entry .rank {
+  width: 20px;
+  text-align: center;
+}
+
+.leaderboard-entry .name {
+  flex-grow: 1;
+  padding: 0 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.leaderboard-entry .score {
+  text-align: right;
+  font-weight: bold;
+}
+
+.multiplayer-indicator {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 14px;
+  padding: 5px 10px;
+  border-radius: 15px;
+  margin-top: 5px;
+}
+
+.status-connecting {
+  background-color: rgba(255, 165, 0, 0.7);
+  color: black;
+  border: 1px solid orange;
+}
+
+.status-connected {
+  background-color: rgba(0, 128, 0, 0.7);
+  border: 1px solid green;
 }

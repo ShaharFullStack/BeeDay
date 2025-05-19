@@ -32,6 +32,10 @@ function init() {
     setupWorld();
     bee = createBee();
     createInitialTreesAndHive();
+    
+    // Expose scene and bee to window for multiplayer access
+    window.scene = scene;
+    window.bee = bee;
 
     // Initial flower population
     updateBeeCellAndManageFlowers(true); // Force initial population
@@ -126,10 +130,18 @@ function createInitialTreesAndHive() {
     
 
     // Render scene
-    renderer.render(scene, camera);
-  }  // Start the game
+    renderer.render(scene, camera);  }
+    // Start the game
   function startGame() {
     console.log("StartGame called, initializing...");
+    
+    // Update UI to show player name
+    if (typeof updateUI === 'function') {
+      updateUI();
+    }
+    
+    // Specifically update player names throughout the UI
+    updatePlayerNames();
 
     // Double-check that THREE is available
     if (typeof THREE === 'undefined') {
@@ -165,9 +177,38 @@ function createInitialTreesAndHive() {
 
     // If THREE is already available, proceed normally
     console.log("THREE is available (type:", typeof THREE, "), initializing game directly");
-    init();
-    animate(0); // Start with time = 0
+    init();    animate(0); // Start with time = 0
   }
 
-  // Expose the startGame function globally
-  window.startGame = startGame;
+  // Add a function to specifically update player names
+function updatePlayerNames() {
+  // Try all possible methods to update player names
+  if (typeof window.updateAllPlayerNames === 'function') {
+    window.updateAllPlayerNames();
+  } else if (typeof window.updatePlayerName === 'function') {
+    window.updatePlayerName();
+  } else {
+    // Manual fallback
+    const playerNameElements = document.querySelectorAll("#player-name");
+    const userName = window.gameState?.currentUser?.name || 
+                     window.user?.name || 
+                     "Player";
+    
+    playerNameElements.forEach(element => {
+      element.textContent = userName;
+      console.log("Manual player name update to:", userName);
+    });
+  }
+}
+
+// Expose the function globally
+window.updatePlayerNames = updatePlayerNames;
+
+// Initialize when the page loads
+document.addEventListener("DOMContentLoaded", function() {
+  // Update player names after a short delay to ensure all scripts are loaded
+  setTimeout(updatePlayerNames, 1000);
+});
+
+// Expose the startGame function globally
+window.startGame = startGame;

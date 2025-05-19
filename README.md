@@ -45,6 +45,27 @@ git clone https://github.com/ShaharFullStack/BeeDay.git
 cd BeeDay
 ```
 
+## 🔐 Setting Up Google Authentication
+
+To enable the Google Sign-In feature:
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Go to "APIs & Services" > "Credentials"
+4. Click "Create Credentials" > "OAuth client ID"
+5. Select "Web application" as the application type
+6. Add your development and production domains to "Authorized JavaScript origins"
+   - For local development, add: `http://localhost:5500`, `http://127.0.0.1:5500`, etc.
+   - For production, add your actual domain
+7. Click "Create" to generate your Client ID
+8. Copy the generated Client ID and replace the `CLIENT_ID` value in `js/auth.js`
+
+```javascript
+const CLIENT_ID = "YOUR_CLIENT_ID_HERE";
+```
+
+> **Note:** Without proper Google OAuth configuration, the Google Sign-In button will fall back to guest login mode.
+
 ## 🙏 Credits
 
 Created with ❤️ by ShaharFullStack. Inspired by the beauty of nature and the importance of bees in our ecosystem.

@@ -37,18 +37,86 @@ function showError(message) {
   }
 }
 
+// Function to initialize the home page with multiplayer options
+function setupHomePage() {
+  // Show the current player's name
+  if (window.gameState && window.gameState.currentUser) {
+    const playerNameElement = document.getElementById("home-player-name");
+    if (playerNameElement) {
+      playerNameElement.textContent = gameState.currentUser.name;
+    }
+    
+    // Show/hide multiplayer toggle based on user type
+    const multiplayerToggle = document.getElementById("multiplayer-toggle");
+    if (multiplayerToggle) {
+      // Only show multiplayer option for non-guest users
+      if (gameState.currentUser.isGuest) {
+        multiplayerToggle.style.display = "none";
+      } else {
+        multiplayerToggle.style.display = "flex";
+        
+        // Set initial checkbox state
+        const checkbox = document.getElementById("multiplayer-checkbox");
+        if (checkbox) {
+          checkbox.checked = gameState.multiplayerEnabled;
+          
+          // Add event listener for checkbox changes
+          checkbox.addEventListener("change", function() {
+            if (this.checked) {
+              gameState.enableMultiplayer();
+            } else {
+              gameState.disableMultiplayer();
+            }
+          });
+        }
+      }
+    }
+  }
+    // Add event listener for home page logout button
+  const homeLogoutBtn = document.getElementById("home-logout-btn");
+  if (homeLogoutBtn) {
+    homeLogoutBtn.addEventListener("click", function() {
+      try {
+        // Call logout function from auth.js
+        if (typeof logoutUser === 'function') {
+          logoutUser();
+          
+          // Go back to login page
+          document.getElementById("home-page").style.display = "none";
+          document.getElementById("login-page").style.display = "flex";
+        }
+      } catch (error) {
+        console.error("Error logging out from home page:", error);
+      }
+    });
+  }
+}
+
 // Function to handle the homepage to game transition
 function initializeHomepage() {
   try {
     console.log("Initializing homepage...");
     
-    const startButton = document.getElementById("start-game-btn");
+    const homeStartButton = document.getElementById("home-start-btn");
+    console.log("Home start button found:", homeStartButton ? "Yes" : "No");
+    
     const homePage = document.getElementById("home-page");
     const gameContainer = document.getElementById("game-container");
     
     // Check if elements exist before proceeding
-    if (!startButton) {
-      throw new Error("Start button element not found");
+    if (!homeStartButton) {
+      console.error("Home start button not found - falling back to alternative lookup");
+      // Try to find the button using a different approach
+      const allStartButtons = document.querySelectorAll(".start-game-btn");
+      if (allStartButtons.length > 0) {
+        console.log("Found start buttons by class:", allStartButtons.length);
+        allStartButtons.forEach(btn => {
+          console.log("Adding click handler to button:", btn.id || "unnamed");
+          btn.addEventListener("click", handleStartGameClick);
+        });
+      } else {
+        throw new Error("Could not find any start game buttons");
+      }
     }
     
     if (!homePage) {
@@ -65,18 +133,32 @@ function initializeHomepage() {
     } else {
       console.warn("detectMobile function not found, using basic detection");
       window.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    }
+    }    console.log("Device detected as:", window.isMobile ? "Mobile" : "Desktop");
     
-    console.log("Device detected as:", window.isMobile ? "Mobile" : "Desktop");
-    
-    // Add click event listener to start button
-    startButton.addEventListener("click", () => {
-      console.log("Start button clicked");
+    // Define the function to handle game start
+    function handleStartGameClick() {
+      console.log("Start game button clicked - starting game");
       
       try {
         // Hide homepage and ensure game container is visible
         homePage.style.display = "none";
         gameContainer.style.display = "block";
+      } catch(err) {
+        console.error("Error in start game handler:", err);
+      }
+    }
+    
+    // Add click event listener to start button
+    homeStartButton.addEventListener("click", handleStartGameClick);
+    
+    // Define a global handler as fallback
+    window.handleStartGameClick = function() {
+      console.log("Global start game handler called");
+      
+      try {
+        // Hide homepage and ensure game container is visible
+        document.getElementById("home-page").style.display = "none";
+        document.getElementById("game-container").style.display = "block";
         
         // Ensure DOM is updated before proceeding
         setTimeout(() => {
@@ -120,7 +202,7 @@ function initializeHomepage() {
         console.error("Error starting game:", error);
         showError("Game start error: " + error.message);
       }
-    });
+    }
     
     console.log("Homepage initialized successfully");
     
@@ -169,13 +251,21 @@ window.onload = function() {
     // Check if the DOM is ready
     if (document.readyState === "complete") {
       console.log("DOM is ready, initializing homepage");
-      initializeHomepage();
+      
+      // Show login page first (it's always shown by default now)
+      const loginPage = document.getElementById("login-page");
+      if (loginPage) {
+        loginPage.style.display = "flex";
+      } else {
+        console.warn("Login page not found, falling back to home page");
+        initializeHomepage();
+      }
     } else {
       console.log("DOM not ready, waiting for DOMContentLoaded");
       // Wait for DOM to be fully loaded
       document.addEventListener("DOMContentLoaded", function() {
-        console.log("DOMContentLoaded fired, initializing homepage");
-        initializeHomepage();
+        console.log("DOMContentLoaded fired, initializing login flow");
+        // Auth.js will handle the initial login flow
       });
     }
     

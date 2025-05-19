@@ -9,101 +9,163 @@
     <title>Bee Day!🐝</title>
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23FFD700'/%3E%3C!-- Bee Body --%3E%3Cellipse cx='50' cy='50' rx='25' ry='18' fill='%23000000'/%3E%3Cellipse cx='50' cy='50' rx='22' ry='15' fill='%23FFD700'/%3E%3C!-- Stripes --%3E%3Crect x='30' y='40' width='40' height='5' fill='%23000000'/%3E%3Crect x='28' y='55' width='44' height='5' fill='%23000000'/%3E%3C!-- Wings --%3E%3Cellipse cx='35' cy='35' rx='15' ry='8' fill='rgba(173,216,230,0.8)' transform='rotate(-30 35 35)'/%3E%3Cellipse cx='65' cy='35' rx='15' ry='8' fill='rgba(173,216,230,0.8)' transform='rotate(30 65 35)'/%3E%3C!-- Eyes --%3E%3Ccircle cx='40' cy='45' r='3' fill='%23000000'/%3E%3Ccircle cx='60' cy='45' r='3' fill='%23000000'/%3E%3C/svg%3E"    />    <!-- CSS -->
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23FFD700'/%3E%3C!-- Bee Body --%3E%3Cellipse cx='50' cy='50' rx='25' ry='18' fill='%23000000'/%3E%3Cellipse cx='50' cy='50' rx='22' ry='15' fill='%23FFD700'/%3E%3C!-- Stripes --%3E%3Crect x='30' y='40' width='40' height='5' fill='%23000000'/%3E%3Crect x='28' y='55' width='44' height='5' fill='%23000000'/%3E%3C!-- Wings --%3E%3Cellipse cx='35' cy='35' rx='15' ry='8' fill='rgba(173,216,230,0.8)' transform='rotate(-30 35 35)'/%3E%3Cellipse cx='65' cy='35' rx='15' ry='8' fill='rgba(173,216,230,0.8)' transform='rotate(30 65 35)'/%3E%3C!-- Eyes --%3E%3Ccircle cx='40' cy='45' r='3' fill='%23000000'/%3E%3Ccircle cx='60' cy='45' r='3' fill='%23000000'/%3E%3C/svg%3E"
+    />
+    <!-- CSS -->
     <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/multiplayer.css" />
+    <!-- Google Sign-In API -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
   <body>
-    <!-- Home Page -->
-    <div id="home-page">
+    <!-- Login Page -->
+    <div id="login-page">
       <div class="title-container">
         <h1>Bee Day!</h1>
         <h2>Honey Hunt</h2>
-
-        <button id="start-game-btn">Bzzz...🐝</button>
+        <div id="login-options">
+          <button id="google-login-btn" class="login-btn">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+              alt="Google Logo"
+              class="login-icon"
+            />
+            Sign in with Google
+          </button>
+          <button id="guest-login-btn" class="login-btn">Play as Guest</button>
+        </div>
+        <div id="user-profile" style="display: none">
+          <img id="user-avatar" src="" alt="User Avatar" />
+          <div id="user-name"></div>
+          <button id="login-start-btn" class="start-game-btn">Bzzz...🐝</button>
+          <button id="logout-btn" class="small-btn">Sign Out</button>
+        </div>
       </div>
-    </div>    <!-- Game Container (hidden initially) -->
-    <div id="game-container" style="display: none">
-        <div id="ui-container">
-          <div>
-            Nectar Carried: <span id="nectar-carried">0</span> /
-            <span id="nectar-capacity">10</span>
-          </div>
-          <div>Honey in Hive: <span id="honey-in-hive">0</span></div>
-        </div>
-        <div id="controls-info">
-          <!-- Controls info content -->
-        </div>
-        <div id="message-box"></div>
-        <div id="pointer-lock-info">
-          Click the screen to enable mouse control
-        </div>
-        <div id="tilt-notification">
-          Please tilt your device to start playing!
+    </div>
+
+    <!-- Home Page (hidden by default) -->
+    <div id="home-page" style="display: none">
+      <div class="title-container">
+        <h1>Bee Day!</h1>
+        <h2>Honey Hunt</h2>
+        <div id="player-welcome">
+          Welcome, <span id="home-player-name">Player</span>!
         </div>
 
-        <!-- Mobile Controls -->
-        <div id="joystick-left">
-          <div class="joystick-knob"></div>
+        <div id="multiplayer-toggle">
+          <label for="multiplayer-checkbox">Enable Multiplayer</label>
+          <input type="checkbox" id="multiplayer-checkbox" />
         </div>
-        <div id="joystick-right">
-          <div class="joystick-knob"></div>
+
+        <!-- Guest name customization section (shown only for guest users) -->
+        <div id="guest-name-container" style="display: none">
+          <input
+            type="text"
+            id="guest-name-input"
+            maxlength="15"
+            placeholder="Enter your bee name"
+          />
+          <button id="guest-name-save">Save Name</button>
         </div>
-        <div id="mobile-height-controls">
-          <div id="height-up">⬆️</div>
-          <div id="height-down">⬇️</div>
+
+        <button id="home-start-btn" class="start-game-btn">Bzzz...🐝</button>
+        <button id="home-logout-btn" class="small-btn">Sign Out</button>
+      </div>
+    </div>
+
+    <!-- Game Container (hidden initially) -->
+    <div id="game-container" style="display: none">
+      <div id="ui-container">
+        <div>
+          Nectar Carried: <span id="nectar-carried">0</span> /
+          <span id="nectar-capacity">10</span>
         </div>
-        <div id="mobile-buttons">
-          <div id="action-button">COLLECT / DEPOSIT</div>
+        <div>Honey in Hive: <span id="honey-in-hive">0</span></div>
+        <div id="player-status">
+          Playing as: <span id="player-name">Player</span>
         </div>
-        <!-- Error message for debugging -->
-        <div id="error-message"></div>
+      </div>
+      <div id="controls-info">
+        <!-- Controls info content -->
+      </div>
+      <div id="message-box"></div>
+      <div id="pointer-lock-info">Click the screen to enable mouse control</div>
+      <div id="tilt-notification">
+        Please tilt your device to start playing!
+      </div>
+
+      <!-- Mobile Controls -->
+      <div id="joystick-left">
+        <div class="joystick-knob"></div>
+      </div>
+      <div id="joystick-right">
+        <div class="joystick-knob"></div>
+      </div>
+      <div id="mobile-height-controls">
+        <div id="height-up">⬆️</div>
+        <div id="height-down">⬇️</div>
+      </div>
+      <div id="mobile-buttons">
+        <div id="action-button">COLLECT / DEPOSIT</div>
+      </div>
+      <!-- Error message for debugging -->
+      <div id="error-message"></div>
     </div>
 
     <!-- Load THREE.js and dependencies first -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
+
     <!-- Verify THREE is loaded -->
     <script>
       // Quick check if THREE loaded properly
       console.log("THREE load check:", typeof THREE);
-      if (typeof THREE === 'undefined') {
+      if (typeof THREE === "undefined") {
         console.error("THREE failed to load from CDN, trying backup...");
         // Create a backup script element
-        var backupScript = document.createElement('script');
+        var backupScript = document.createElement("script");
         backupScript.src = "https://threejs.org/build/three.min.js";
-        backupScript.onload = function() {
+        backupScript.onload = function () {
           console.log("Backup THREE loaded successfully:", typeof THREE);
         };
-        backupScript.onerror = function() {
+        backupScript.onerror = function () {
           console.error("Backup THREE failed to load!");
-          document.getElementById("error-message").textContent = 
+          document.getElementById("error-message").textContent =
             "Failed to load 3D library. Please check your internet connection and refresh.";
           document.getElementById("error-message").style.display = "block";
         };
         document.head.appendChild(backupScript);
       }
     </script>
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
-    
+
     <!-- Load THREE loader & initialization helper -->
-    
+
     <!-- Then load configuration files -->
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/ui.js"></script>
-
     <!-- Load shared globals file next -->
     <script src="js/globals.js"></script>
-    
+    <script src="js/gameState.js"></script>
+    <script src="js/playerUnifier.js"></script>
+
     <!-- Then load controls which depend on THREE -->
-    <script src="js/controls.js"></script><!-- Then load entity definitions -->
+    <script src="js/controls.js"></script>
+    <!-- Then load entity definitions -->
     <script src="js/entities/bee.js"></script>
     <script src="js/entities/flower.js"></script>
     <script src="js/entities/tree.js"></script>
     <script src="js/entities/hive.js"></script>
     <script src="js/world.js"></script>
     <script src="js/game.js"></script>
+    <script src="js/fixButtons.js"></script>
+    <script src="js/playerNameUpdater.js"></script>
+    <script src="js/multiplayerStatus.js"></script>
+    <script src="js/multiplayer.js"></script>
+    <script src="js/guestNameHandler.js"></script>
+    <script src="js/playerInteractions.js"></script>
 
     <!-- Main should be loaded last -->
     <script src="js/main.js"></script>
