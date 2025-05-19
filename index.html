@@ -9,13 +9,8 @@
     <title>BeeSim: Endless Fields & Trees</title>
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23FFD700'/%3E%3C!-- Bee Body --%3E%3Cellipse cx='50' cy='50' rx='25' ry='18' fill='%23000000'/%3E%3Cellipse cx='50' cy='50' rx='22' ry='15' fill='%23FFD700'/%3E%3C!-- Stripes --%3E%3Crect x='30' y='40' width='40' height='5' fill='%23000000'/%3E%3Crect x='28' y='55' width='44' height='5' fill='%23000000'/%3E%3C!-- Wings --%3E%3Cellipse cx='35' cy='35' rx='15' ry='8' fill='rgba(173,216,230,0.8)' transform='rotate(-30 35 35)'/%3E%3Cellipse cx='65' cy='35' rx='15' ry='8' fill='rgba(173,216,230,0.8)' transform='rotate(30 65 35)'/%3E%3C!-- Eyes --%3E%3Ccircle cx='40' cy='45' r='3' fill='%23000000'/%3E%3Ccircle cx='60' cy='45' r='3' fill='%23000000'/%3E%3C/svg%3E"
-    />
-    <!-- CSS -->
-    <link rel="stylesheet" href="css/styles.css">
-    <!-- Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23FFD700'/%3E%3C!-- Bee Body --%3E%3Cellipse cx='50' cy='50' rx='25' ry='18' fill='%23000000'/%3E%3Cellipse cx='50' cy='50' rx='22' ry='15' fill='%23FFD700'/%3E%3C!-- Stripes --%3E%3Crect x='30' y='40' width='40' height='5' fill='%23000000'/%3E%3Crect x='28' y='55' width='44' height='5' fill='%23000000'/%3E%3C!-- Wings --%3E%3Cellipse cx='35' cy='35' rx='15' ry='8' fill='rgba(173,216,230,0.8)' transform='rotate(-30 35 35)'/%3E%3Cellipse cx='65' cy='35' rx='15' ry='8' fill='rgba(173,216,230,0.8)' transform='rotate(30 65 35)'/%3E%3C!-- Eyes --%3E%3Ccircle cx='40' cy='45' r='3' fill='%23000000'/%3E%3Ccircle cx='60' cy='45' r='3' fill='%23000000'/%3E%3C/svg%3E"    />    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
     <!-- Home Page -->
@@ -23,74 +18,100 @@
       <div class="title-container">
         <h1>BeeSim</h1>
         <h2>Endless Fields & Trees</h2>
+        <div id="pointer-lock-info" style="display: none">
+          Click the screen to enable mouse control
+        </div>
         <button id="start-game-btn">Start Flying</button>
       </div>
     </div>
 
     <!-- Game Container (hidden initially) -->
-    <div id="game-container" style="display: none;">
-      <div id="ui-container">
-        <div>
-          Nectar Carried: <span id="nectar-carried">0</span> /
-          <span id="nectar-capacity">10</span>
+    <div id="game-container" style="display: none">
+      <div id="game-container" style="display: none">
+        <div id="ui-container">
+          <div>
+            Nectar Carried: <span id="nectar-carried">0</span> /
+            <span id="nectar-capacity">10</span>
+          </div>
+          <div>Honey in Hive: <span id="honey-in-hive">0</span></div>
         </div>
-        <div>Honey in Hive: <span id="honey-in-hive">0</span></div>
-      </div>
-      <div id="controls-info">
-        <div class="desktop-controls">
-          <p>Controls:</p>
-          <p>Mouse: Look around</p>
-          <p>Left Click: Collect nectar / Deposit honey</p>
-          <p>Mouse Wheel: Fly up/down</p>
-          <p>W/S: Move forward/backward</p>
-          <p>A/D: Move sideways</p>
-          <p>R/F: Fly up/down</p>
-          <p>Shift: Move faster</p>
-          <p>Space: Collect/Deposit</p>
-          <p>(Click the screen to enable mouse control)</p>
+        <div id="controls-info">
+          <!-- Controls info content -->
         </div>
-        <div class="mobile-controls">
-          <p>Controls:</p>
-          <p>Left joystick: Look around</p>
-          <p>Right joystick: Move</p>
-          <p>Up/Down buttons: Adjust height</p>
-          <p>Action button: Collect/Deposit</p>
+        <div id="message-box"></div>
+        <div id="pointer-lock-info">
+          Click the screen to enable mouse control
         </div>
-      </div>
-      <div id="message-box"></div>
-      <div id="tilt-notification">Please tilt your device to start playing!</div>
+        <div id="tilt-notification">
+          Please tilt your device to start playing!
+        </div>
 
-      <!-- Mobile Controls -->
-      <div id="joystick-left">
-        <div class="joystick-knob"></div>
-      </div>
-      <div id="joystick-right">
-        <div class="joystick-knob"></div>
-      </div>
-      <div id="mobile-height-controls">
-        <div id="height-up">⬆️</div>
-        <div id="height-down">⬇️</div>
-      </div>
-      <div id="mobile-buttons">
-        <div id="action-button">COLLECT / DEPOSIT</div>
-      </div>
-      
-      <!-- Error message for debugging -->
-      <div id="error-message"></div>
-    </div>
+        <!-- Mobile Controls -->
+        <div id="joystick-left">
+          <div class="joystick-knob"></div>
+        </div>
+        <div id="joystick-right">
+          <div class="joystick-knob"></div>
+        </div>
+        <div id="mobile-height-controls">
+          <div id="height-up">⬆️</div>
+          <div id="height-down">⬇️</div>
+        </div>
+        <div id="mobile-buttons">
+          <div id="action-button">COLLECT / DEPOSIT</div>
+        </div>    <!-- Error message for debugging -->
+        <div id="error-message"></div>
+      </div>    </div>
 
-    <!-- Core JavaScript Files -->
+    <!-- Load THREE.js and dependencies first -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Verify THREE is loaded -->
+    <script>
+      // Quick check if THREE loaded properly
+      console.log("THREE load check:", typeof THREE);
+      if (typeof THREE === 'undefined') {
+        console.error("THREE failed to load from CDN, trying backup...");
+        // Create a backup script element
+        var backupScript = document.createElement('script');
+        backupScript.src = "https://threejs.org/build/three.min.js";
+        backupScript.onload = function() {
+          console.log("Backup THREE loaded successfully:", typeof THREE);
+        };
+        backupScript.onerror = function() {
+          console.error("Backup THREE failed to load!");
+          document.getElementById("error-message").textContent = 
+            "Failed to load 3D library. Please check your internet connection and refresh.";
+          document.getElementById("error-message").style.display = "block";
+        };
+        document.head.appendChild(backupScript);
+      }
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    
+    <!-- Load THREE loader & initialization helper -->
+    <script src="js/threeLoader.js"></script>
+    
+    <!-- Then load configuration files -->
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/ui.js"></script>
-    <script src="js/controls.js"></script>
+
+    <!-- Load shared globals file next -->
+    <script src="js/globals.js"></script>
+    
+    <!-- Then load controls which depend on THREE -->
+    <script src="js/controls.js"></script><!-- Then load entity definitions -->
     <script src="js/entities/bee.js"></script>
     <script src="js/entities/flower.js"></script>
     <script src="js/entities/tree.js"></script>
     <script src="js/entities/hive.js"></script>
-    <script src="js/entities/grass.js"></script>
+    <script src="js/entities/grass_fixed.js"></script>    <!-- Then load world and game logic -->
     <script src="js/world.js"></script>
     <script src="js/game.js"></script>
+
+    <!-- Main should be loaded last -->
     <script src="js/main.js"></script>
   </body>
 </html>

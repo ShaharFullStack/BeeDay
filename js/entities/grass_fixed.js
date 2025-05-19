@@ -2,7 +2,7 @@
 // https://github.com/thebenezer/FluffyGrass
 
 // Grass configuration
-const BLADE_COUNT = 10000;  // Number of grass blades (reduced for testing)
+const BLADE_COUNT = 10000;  // Number of grass blades (reduced for performance)
 const BLADE_WIDTH = 0.12;    // Width of grass blade
 const BLADE_HEIGHT = 0.8;    // Height of grass blade 
 const BLADE_HEIGHT_VARIATION = 0.4;
@@ -28,7 +28,7 @@ const grassVertexShader = `
   varying vec2 vUv;
   varying float frc;
   
-  // Simplified wind calculation function
+  // Modified wind calculation function with explicit parameter access
   vec2 calculateWind(float t, vec3 offsetPos) {
     float xPos = offsetPos.x;
     float zPos = offsetPos.z;
@@ -41,9 +41,9 @@ const grassVertexShader = `
       sin(t * 0.4 + zPos) * 0.04 + 
       sin(t * 0.6 + zPos * 0.5) * 0.02 +
       sin(t * 0.8 + xPos) * 0.03
-    );
-  }
-    void main() {
+    );  }
+  
+  void main() {
     vUv = uv;
     
     // Height percentage for coloring

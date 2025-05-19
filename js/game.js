@@ -1,137 +1,181 @@
 // Main game initialization and loops
 
-// Game state variables
-let scene, camera, renderer;
-let bee, beeWings;
-let flowers = [];
-let trees = [];
-let hive, hiveTree; // The tree carrying the hive
-let ground;
-
-// Game state
-let nectarCarried = 0;
-let honeyInHive = 0;
-
-// Endless field generation tracking
-let populatedCells = new Set();
-let lastBeeCellX = null, lastBeeCellZ = null;
-
 // Initialize the game
 function init() {
-  // Set up THREE.js scene, camera, and renderer
-  scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x87ceeb);
-  scene.fog = new THREE.Fog(0x87ceeb, 100, 400); // Adjusted fog for larger world
+  try {
+    // Check if THREE is available through our threeLoader
+    if (typeof THREE === 'undefined') {
+      console.error("THREE is not defined in init()! Make sure Three.js is loaded correctly.");
+      return;
+    }
 
-  camera = new THREE.PerspectiveCamera(
-    75,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
-  );
+    console.log("Initializing game with THREE:", typeof THREE);
 
-  renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.shadowMap.enabled = true;
-  document.body.appendChild(renderer.domElement);
+    // Set up THREE.js scene, camera, and renderer
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(SKY_COLOR);
+    scene.fog = new THREE.Fog(SKY_COLOR, 100, 400); // Adjusted fog for larger world
 
-  // Set up the world, entities, and mechanics
-  setupWorld();
-  createBee();
-  createInitialTreesAndHive();
-
-  // Initial flower population
-  updateBeeCellAndManageFlowers(true); // Force initial population
-
-  // Set up event handlers
-  setupEventListeners();
-  updateUI();
-
-  // Make sure controls are visible at start
-  const controlsInfo = document.getElementById("controls-info");
-  controlsInfo.style.opacity = "1";
-  controlsInfo.style.display = "block";
-
-  // Apply device-specific styles
-  applyDeviceSpecificStyles();
-
-  // Show tilt notification on mobile
-  if (isMobile) {
-    document.getElementById("tilt-notification").style.display = "block";
-    requestDeviceOrientationPermission();
-  }
-}
-
-// Main animation loop
-function animate() {
-  requestAnimationFrame(animate);
-  updateBeeMovement();
-  updateBeeCellAndManageFlowers(); // Manage dynamic content
-  renderer.render(scene, camera);
-}
-
-// Start the game
-function startGame() {
-  init();
-  animate();
-
-  // For iOS, we need to request device orientation when the user interacts
-  if (isMobile) {
-    document.addEventListener(
-      "touchstart",
-      function () {
-        if (!deviceOrientationPermissionRequested) {
-          requestDeviceOrientationPermission();
-        }
-      },
-      { once: true }
+    camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
     );
+
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    document.body.appendChild(renderer.domElement);
+
+    // Set up the world, entities, and mechanics
+    setupWorld();
+    bee = createBee();
+    createInitialTreesAndHive();
+
+    // Initial flower population
+    updateBeeCellAndManageFlowers(true); // Force initial population
+
+    // Set up event handlers
+    setupEventListeners();
+    updateUI();
+
+    // Make sure controls are visible at start
+    const controlsInfo = document.getElementById("controls-info");
+    controlsInfo.style.opacity = "1";
+    controlsInfo.style.display = "block";
+
+    // Apply device-specific styles
+    applyDeviceSpecificStyles();    // Show tilt notification on mobile
+    if (isMobile) {
+      document.getElementById("tilt-notification").style.display = "block";
+      requestDeviceOrientationPermission();
+    }
+  } catch (error) {
+    console.error("Error initializing game:", error);
   }
-}// Set up the world, entities, and mechanics
-  setupWorld();
-  createBee();
-  createInitialTreesAndHive();
-
-  // Initial flower population
-  updateBeeCellAndManageFlowers(true); // Force initial population
-
-  // Set up event handlers
-  setupEventListeners();
-  updateUI();
-
-  // Apply device-specific styles
-  applyDeviceSpecificStyles();
-
-  // Show tilt notification on mobile
-  if (isMobile) {
-    document.getElementById("tilt-notification").style.display = "block";
-    requestDeviceOrientationPermission();
-  }
-
-
-// Main animation loop
-function animate() {
-  requestAnimationFrame(animate);
-  updateBeeMovement();
-  updateBeeCellAndManageFlowers(); // Manage dynamic content
-  renderer.render(scene, camera);
 }
 
-// Start the game
-function startGame() {
-  init();
-  animate();
+// Create initial trees and the hive
+function createInitialTreesAndHive() {
+    try {
+      // Check if createTree function exists
+      if (typeof createTree !== 'function') {
+        console.error("createTree function is not defined!");
+        return;
+      }
 
-  // For iOS, we need to request device orientation when the user interacts
-  if (isMobile) {
-    document.addEventListener(
-      "touchstart",
-      function () {
-        if (!deviceOrientationPermissionRequested) {
-          requestDeviceOrientationPermission();
+      // Create several trees around the starting area
+      const treeCount = 10;
+      const treeRadius = 25; // Spread trees in a circle of this radius
+
+      // Create the special hive tree first
+      hiveTree = createTree(15, 15, true); // Place the hive tree at a fixed position
+
+      if (!hiveTree) {
+        console.error("Failed to create hive tree!");
+        return;
+      }
+
+      // Create the hive after the hive tree is created
+      if (typeof createHive === 'function') {
+        createHive();
+      } else {
+        console.error("createHive function is not defined!");
+      }
+
+      // Create additional trees around the area
+      for (let i = 0; i < treeCount; i++) {
+        const angle = (i / treeCount) * Math.PI * 2;
+        const x = Math.cos(angle) * treeRadius;
+        const z = Math.sin(angle) * treeRadius;
+
+        // Skip if too close to the hive tree
+        if (hiveTree) {
+          const distToHiveTree = Math.sqrt(
+            Math.pow(x - hiveTree.position.x, 2) +
+            Math.pow(z - hiveTree.position.z, 2)
+          );
+
+          if (distToHiveTree > 10) {
+            createTree(x, z);
+          }
         }
-      },
-      { once: true }
-    );
+      }
+
+      // Create the grass if function exists
+      if (typeof createGrass === 'function') {
+        grass = createGrass();
+      }
+
+      console.log("Initial trees and hive created");
+    } catch (error) {
+      console.error("Error creating initial trees and hive:", error);
+    }
   }
-}
+
+  // Main animation loop
+  function animate(time) {
+    requestAnimationFrame(animate);
+
+    // Calculate delta time for smooth animations
+    const deltaTime = time - lastTime;
+    lastTime = time;
+
+    // Update bee movement
+    updateBeeMovement();
+
+    // Update flowers
+    updateBeeCellAndManageFlowers();
+
+    // Update grass animation
+    if (grass && grass.material) {
+      updateGrass(grass, deltaTime * 0.001); // Convert to seconds
+    }
+
+    // Render scene
+    renderer.render(scene, camera);
+  }  // Start the game
+  function startGame() {
+    console.log("StartGame called, initializing...");
+
+    // Double-check that THREE is available
+    if (typeof THREE === 'undefined') {
+      console.error("THREE is not defined in startGame! Waiting for it to load...");
+      if (window.threeLoader && typeof window.threeLoader.waitForThree === 'function') {
+        console.log("Using threeLoader to wait for THREE...");
+        window.threeLoader.waitForThree(() => {
+          console.log("THREE now available via threeLoader, initializing game...");
+          init();
+          animate(0); // Start with time = 0
+        });
+        return;
+      } else {
+        console.error("ThreeLoader is not available! Trying direct init after delay...");
+        // Last resort - try after a short delay
+        setTimeout(() => {
+          if (typeof THREE !== 'undefined') {
+            console.log("THREE available after delay, initializing...");
+            init();
+            animate(0); // Start with time = 0
+          } else {
+            console.error("THREE still not available after delay!");
+            const errorMsg = document.getElementById("error-message");
+            if (errorMsg) {
+              errorMsg.textContent = "Failed to load 3D library. Please refresh the page or try a different browser.";
+              errorMsg.style.display = "block";
+            }
+          }
+        }, 1000);
+        return;
+      }
+    }
+
+    // If THREE is already available, proceed normally
+    console.log("THREE is available (type:", typeof THREE, "), initializing game directly");
+    init();
+    animate(0); // Start with time = 0
+  }
+
+  // Expose the startGame function globally
+  window.startGame = startGame;

@@ -1,4 +1,42 @@
 // Beehive creation and management
+// Create initial trees and the hive
+function createInitialTreesAndHive() {
+  try {
+    // Create several trees around the starting area
+    const treeCount = 10;
+    const treeRadius = 25; // Spread trees in a circle of this radius
+    
+    // Create the special hive tree first
+    hiveTree = createTree(15, 15, true); // Place the hive tree at a fixed position
+    
+    // Create the hive after the hive tree is created
+    createHive();
+    
+    // Create additional trees around the area
+    for (let i = 0; i < treeCount; i++) {
+      const angle = (i / treeCount) * Math.PI * 2;
+      const x = Math.cos(angle) * treeRadius;
+      const z = Math.sin(angle) * treeRadius;
+      
+      // Skip if too close to the hive tree
+      const distToHiveTree = Math.sqrt(
+        Math.pow(x - hiveTree.position.x, 2) + 
+        Math.pow(z - hiveTree.position.z, 2)
+      );
+      
+      if (distToHiveTree > 10) {
+        createTree(x, z);
+      }
+    }
+    
+    // Create the grass
+    grass = createGrass();
+    
+    console.log("Initial trees and hive created");
+  } catch (error) {
+    console.error("Error creating initial trees and hive:", error);
+  }
+}
 
 // Create the beehive attached to the hive tree
 function createHive() {

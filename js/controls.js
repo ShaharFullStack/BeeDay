@@ -25,11 +25,33 @@ let pinchStartDistance = 0;
 let currentHeight = 5; // Starting height
 
 // Direction and movement vectors (for smoother movement)
-const moveDirection = new THREE.Vector3();
-const moveVelocity = new THREE.Vector3();
+let moveDirection;
+let moveVelocity;
+
+// Initialize vectors when setting up event listeners (when THREE is available)
+function initVectors() {
+  if (typeof THREE === 'undefined') {
+    console.error("THREE is not defined in initVectors!");
+    if (window.threeLoader && typeof window.threeLoader.waitForThree === 'function') {
+      window.threeLoader.waitForThree(() => {
+        console.log("THREE is now available for vector initialization");
+        moveDirection = new THREE.Vector3();
+        moveVelocity = new THREE.Vector3();
+      });
+    }
+    return;
+  }
+  
+  console.log("Initializing vectors with THREE:", typeof THREE);
+  moveDirection = new THREE.Vector3();
+  moveVelocity = new THREE.Vector3();
+}
 
 // Set up all event listeners
 function setupEventListeners() {
+  // Initialize vectors now that THREE is available
+  initVectors();
+  
   // Desktop controls
   document.addEventListener("keydown", onKeyDown);
   document.addEventListener("keyup", onKeyUp);
@@ -264,15 +286,14 @@ function setupMobileControls() {
       clearInterval(heightInterval);
       heightDownButton.style.backgroundColor = "rgba(116, 185, 255, 0.8)";
     });
-      // Also handle touchcancel event to clear interval
+    
+    // Also handle touchcancel event to clear interval
     heightUpButton.addEventListener("touchcancel", function() {
       clearInterval(heightInterval);
-      heightUpButton.style.backgroundColor = "rgba(116, 185, 255, 0.8)";
     });
     
     heightDownButton.addEventListener("touchcancel", function() {
       clearInterval(heightInterval);
-      heightDownButton.style.backgroundColor = "rgba(116, 185, 255, 0.8)";
     });
 
   } catch (error) {
@@ -288,6 +309,13 @@ function setupMobileControls() {
 // Process all current movement inputs and update the bee position
 function updateBeeMovement() {
   try {
+    // Ensure moveDirection and moveVelocity are initialized
+    if (!moveDirection || !moveVelocity) {
+      console.log("Movement vectors not initialized yet, initializing now...");
+      initVectors();
+      return; // Skip this frame
+    }
+    
     // First calculate direction vector
     moveDirection.set(0, 0, 0);
     

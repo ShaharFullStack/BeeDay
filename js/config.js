@@ -13,7 +13,7 @@ const MOUSE_WHEEL_SENSITIVITY = 0.01;
 // Endless field generation
 const CELL_SIZE = 20;
 const VIEW_RADIUS_CELLS = 3;
-const FLOWER_DENSITY_PER_CELL = Math.floor(Math.random() * 4) + 1; // Random density between 1 and 3
+const FLOWER_DENSITY_PER_CELL = Math.floor(Math.random() * 5) + 6 ; // Random density between 1 and 3
 const MAX_FLOWERS = 300;
 
 // Visual configs - Updated for low-poly style

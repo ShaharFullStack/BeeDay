@@ -41,7 +41,6 @@ function createGround(size) {
     const groundGeometry = new THREE.PlaneGeometry(size, size, segmentCount, segmentCount);
     
     // Apply gentle waves to the ground to make it more interesting
-    // Use buffer attribute directly for newer versions of Three.js
     const positionAttribute = groundGeometry.getAttribute('position');
     
     for (let i = 0; i < positionAttribute.count; i++) {
@@ -60,9 +59,12 @@ function createGround(size) {
       wireframe: false
     });
     
+    // Create the ground mesh and add it to the scene
     ground = new THREE.Mesh(groundGeometry, groundMaterial);
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
+    
+    // Add to scene
     scene.add(ground);
     
     // Add hexagon pattern overlay
@@ -84,6 +86,7 @@ function createHexagonPattern(size) {
       wireframe: true
     });
     
+    // Create the hexGroup before adding hexagons to it
     const hexGroup = new THREE.Group();
     
     const rows = Math.ceil(size / (hexSize * 1.5));
@@ -110,6 +113,8 @@ function createHexagonPattern(size) {
     }
     
     hexGroup.position.y = 0.1; // Slight offset to avoid z-fighting
+    
+    // Add to scene
     scene.add(hexGroup);
   } catch (error) {
     console.error("Error creating hexagon pattern:", error);
