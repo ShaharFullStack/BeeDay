@@ -65,7 +65,7 @@ function createFlower(x, z, cellKey) {
     
     // Create stem
     const stemHeight = 1.0 + Math.random() * 0.6;
-    const stemGeometry = new THREE.CylinderGeometry(0.03, 0.05, stemHeight, LOW_POLY_SEGMENTS);
+    const stemGeometry = new THREE.CylinderGeometry(0.03, 0.03, stemHeight, LOW_POLY_SEGMENTS);
     const stemMaterial = new THREE.MeshPhongMaterial({ 
       color: 0x2ecc71,
       flatShading: true
@@ -94,8 +94,8 @@ function createFlower(x, z, cellKey) {
       const angle = (i / numPetals) * Math.PI * 2;
       petal.position.x = Math.sin(angle) * 0.2;
       petal.position.z = Math.cos(angle) * 0.2;
-      petal.rotation.y = -angle + Math.PI / 2;
-      petal.rotation.x = Math.PI / 4;
+      petal.rotation.y = -angle + Math.PI * 2;
+      petal.rotation.x = Math.PI * 2;
       petal.scale.set(1 + Math.random() * 0.2 - 0.1, 1 + Math.random() * 0.2 - 0.1, 1);
       petal.castShadow = true;
       outerPetalsGroup.add(petal);
@@ -111,7 +111,7 @@ function createFlower(x, z, cellKey) {
       petal.position.x = Math.sin(angle) * 0.15;
       petal.position.z = Math.cos(angle) * 0.15;
       petal.rotation.y = -angle + Math.PI / 2;
-      petal.rotation.x = Math.PI / 3;
+      petal.rotation.x = Math.PI * 2;
       petal.scale.set(0.8 + Math.random() * 0.2 - 0.1, 0.8 + Math.random() * 0.2 - 0.1, 1);
       petal.castShadow = true;
       innerPetalsGroup.add(petal);
