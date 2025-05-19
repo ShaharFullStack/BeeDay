@@ -66,13 +66,13 @@ function createBee() {
     const rightWing = new THREE.Mesh(wingGeometry, wingMaterial);
     rightWing.position.set(0.2, 0.2, 0);
     rightWing.rotation.y = Math.PI;
-    rightWing.rotation.z = -Math.PI / 6;
+    rightWing.rotation.z = Math.PI / 6;
     beeWings.add(rightWing);
     
     bee.add(beeWings);
   
     // Add camera to bee
-    camera.position.set(0, 0.25, 0.05);
+    camera.position.set(0, 4.25, 5.05);
     bee.add(camera);
     
     scene.add(bee);
