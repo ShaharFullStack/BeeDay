@@ -32,11 +32,11 @@ function init() {
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.shadowMap.enabled = true;  document.body.appendChild(renderer.domElement);
+  renderer.shadowMap.enabled = true;
+  document.body.appendChild(renderer.domElement);
 
   // Set up the world, entities, and mechanics
-  setupWorld(scene);
-  ground = createGround(scene, 1000);
+  setupWorld();
   createBee();
   createInitialTreesAndHive();
 
@@ -59,6 +59,22 @@ function init() {
   if (isMobile) {
     document.getElementById("tilt-notification").style.display = "block";
     requestDeviceOrientationPermission();
+    
+    // Additional mobile setup - make sure Hammer.js doesn't interfere with our controls
+    if (typeof Hammer !== 'undefined') {
+      // Prevent default Hammer behaviors on document body
+      const hammerOptions = {
+        touchAction: 'none',
+        recognizers: {
+          pinch: {
+            enable: false // Explicitly disable pinch recognition globally
+          }
+        }
+      };
+      
+      // Apply these options to any Hammer instance attached to the document body
+      Hammer.defaults.cssProps.userSelect = 'auto'; // Allow selection where needed
+    }
   }
 }
 

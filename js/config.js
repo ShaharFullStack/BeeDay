@@ -2,26 +2,52 @@
 
 // Game settings
 const NECTAR_CAPACITY = 10;
-const HARVEST_RANGE = 0.2;
+const HARVEST_RANGE = 0.5;
 const DEPOSIT_RANGE = 4.5;
 
 // Movement settings
-const MOVE_SPEED = 0.025;
+const MOVE_SPEED = 0.1;
 const MOUSE_SENSITIVITY = 0.002;
-const MOUSE_WHEEL_SENSITIVITY = 0.025;
+const MOUSE_WHEEL_SENSITIVITY = 0.01;
 
 // Endless field generation
 const CELL_SIZE = 20;
 const VIEW_RADIUS_CELLS = 3;
-const FLOWER_DENSITY_PER_CELL = 5;
+const FLOWER_DENSITY_PER_CELL = Math.floor(Math.random() * 4) + 1; // Random density between 1 and 3
 const MAX_FLOWERS = 300;
 
-// Visual configs
+// Visual configs - Updated for low-poly style
 const FLOWER_PETAL_COLORS = [
-  0xff69b4, 0xff1493, 0xda70d6, 0xba55d3, 0xff8c00, 0xffa500, 0xffff55,
+  0xff9ff3, // Pink
+  0xffb8b8, // Light pink
+  0xffeaa7, // Light yellow
+  0xdff9fb, // Light blue
+  0xf368e0, // Bright pink
+  0xff9ff3, // Light pink
+  0xffeaa7, // Light yellow
 ];
+
+// Tree colors for low-poly style
+const TREE_TRUNK_COLOR = 0x8B4513; // Brown
+const TREE_LEAVES_COLORS = [
+  0xff9ff3, // Pink (cherry blossom)
+  0xffb8b8, // Light pink
+  0x55efc4, // Mint green
+  0x00cec9, // Teal
+  0x81ecec, // Light cyan
+  0x74b9ff, // Light blue
+];
+
+// Ground color
+const GROUND_COLOR = 0x81ecec; // Light turquoise
+
+// Sky color
+const SKY_COLOR = 0x74b9ff; // Light blue sky
 
 // Device detection
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
   navigator.userAgent
 );
+
+// Low-poly settings
+const LOW_POLY_SEGMENTS = 4; // Lower number = more faceted/low-poly look
