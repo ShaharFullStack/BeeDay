@@ -1,107 +1,155 @@
-// Tree entity creation and management
+// Beehive creation and management
 
-// Create a single tree at the given position with specified parameters
-function createTree(
-  x,
-  z,
-  trunkRadius,
-  trunkHeight,
-  leavesRadius,
-  leavesHeight
-) {
-  const treeGroup = new THREE.Group();
-  treeGroup.position.set(x, 0, z);
-
-  // Low-poly trunk with faceted segments
-  const trunkGeometry = new THREE.CylinderGeometry(
-    trunkRadius * 0.7,
-    trunkRadius,
-    trunkHeight +2,
-    LOW_POLY_SEGMENTS,
-    3,
-    false
-  );
+// Create the beehive attached to the hive tree
+function createHive() {
+  try {
+    if (!hiveTree) {
+      console.error("Hive tree not defined before creating hive!");
+      return;
+    }
   
-  const trunkMaterial = new THREE.MeshLambertMaterial({
-    color: TREE_TRUNK_COLOR,
-    flatShading: true // For low-poly look
-  });
+    // Create a more detailed beehive structure - low-poly style
+    const hiveGroup = new THREE.Group();
   
-  const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
-  trunk.position.y = trunkHeight / 2;
-  trunk.castShadow = true;
-  trunk.receiveShadow = true;
-  treeGroup.add(trunk);
-
-  // Low-poly leaves with random pastel colors
-  // Use octahedron for low-poly look instead of sphere
-  const leavesGeometry = new THREE.OctahedronGeometry(leavesRadius, 1);
-  
-  // Randomize vertices to make it more interesting - BufferGeometry version
-  const positionAttribute = leavesGeometry.getAttribute('position');
-  const offset = 0.2;
-  
-  for (let i = 0; i < positionAttribute.count; i++) {
-    const randomX = (Math.random() * offset * 2) - offset;
-    const randomY = (Math.random() * offset * 2) - offset;
-    const randomZ = (Math.random() * offset * 2) - offset;
+    // Main hive body - low-poly cylinder
+    const hiveBaseGeometry = new THREE.CylinderGeometry(
+      1.2,
+      1.5,
+      2,
+      LOW_POLY_SEGMENTS,
+      2,
+      false
+    );
     
-    positionAttribute.setX(i, positionAttribute.getX(i) + randomX);
-    positionAttribute.setY(i, positionAttribute.getY(i) + randomY);
-    positionAttribute.setZ(i, positionAttribute.getZ(i) + randomZ);
+    // Using MeshPhongMaterial which supports flatShading
+    const hiveMaterial = new THREE.MeshPhongMaterial({ 
+      color: 0xfdcb6e, // Yellow color
+      flatShading: true
+    });
+    
+    // Add some randomization for more organic feel using BufferGeometry methods
+    const positionAttribute = hiveBaseGeometry.getAttribute('position');
+    const vertexCount = positionAttribute.count;
+    const skipTopBottom = Math.floor(vertexCount / 3); // Approximately skip the top and bottom vertices
+    
+    for (let i = skipTopBottom; i < vertexCount - skipTopBottom; i++) {
+      const offset = 0.1;
+      if (Math.random() > 0.5) { // Only modify some vertices for a more interesting look
+        positionAttribute.setX(i, positionAttribute.getX(i) + ((Math.random() * offset * 2) - offset));
+        positionAttribute.setZ(i, positionAttribute.getZ(i) + ((Math.random() * offset * 2) - offset));
+      }
+    }
+    
+    hiveBaseGeometry.computeVertexNormals();
+    
+    const hiveBase = new THREE.Mesh(hiveBaseGeometry, hiveMaterial);
+    hiveBase.castShadow = true;
+    hiveBase.receiveShadow = true;
+    hiveGroup.add(hiveBase);
+  
+    // Top dome of the hive - low-poly cone
+    const hiveTopGeometry = new THREE.ConeGeometry(
+      1.2,
+      1.2,
+      LOW_POLY_SEGMENTS,
+      1
+    );
+    const hiveTop = new THREE.Mesh(hiveTopGeometry, hiveMaterial);
+    hiveTop.position.y = 1;
+    hiveTop.castShadow = true;
+    hiveTop.receiveShadow = true;
+    hiveGroup.add(hiveTop);
+  
+    // Add entrance hole
+    const entranceGeometry = new THREE.CircleGeometry(0.3, LOW_POLY_SEGMENTS);
+    const entranceMaterial = new THREE.MeshBasicMaterial({
+      color: 0x4d3900,
+    }); // Dark brown
+    const entrance = new THREE.Mesh(entranceGeometry, entranceMaterial);
+    entrance.position.set(0, 0, 1.51);
+    entrance.rotation.y = Math.PI;
+    hiveGroup.add(entrance);
+  
+    // Add some honeycomb pattern detail on the hive
+    const honeycombPattern = createHoneycombPattern();
+    honeycombPattern.position.set(0, 0, 0);
+    hiveGroup.add(honeycombPattern);
+  
+    // Position hive on the hiveTree trunk (not on leaves)
+    // Place it near the top of the trunk but below the leaves
+    const trunkTopY = hiveTree.userData.trunkHeight * 0.8; // 80% up the trunk
+  
+    // Position the hive slightly off-center on a branch coming from the trunk
+    const branchGeometry = new THREE.CylinderGeometry(0.3, 0.2, 2.5, LOW_POLY_SEGMENTS);
+    
+    // Using MeshPhongMaterial which supports flatShading
+    const branchMaterial = new THREE.MeshPhongMaterial({
+      color: TREE_TRUNK_COLOR,
+      flatShading: true
+    });
+    
+    const branch = new THREE.Mesh(branchGeometry, branchMaterial);
+    branch.position.set(
+      hiveTree.position.x,
+      trunkTopY,
+      hiveTree.position.z
+    );
+    branch.rotation.z = Math.PI / 4; // Angle the branch upward and outward
+    branch.castShadow = true;
+    scene.add(branch);
+  
+    // Position the hive at the end of the branch
+    hiveGroup.position.set(
+      hiveTree.position.x + 1.8, // Offset from tree center
+      trunkTopY + 1.2, // Height on the tree trunk
+      hiveTree.position.z
+    );
+  
+    hive = hiveGroup; // Assign the hive group to the global hive variable
+    scene.add(hiveGroup);
+  } catch (error) {
+    console.error("Error creating hive:", error);
   }
-  
-  leavesGeometry.computeVertexNormals();
-  
-  // Randomly choose a pastel color for the leaves
-  const randomLeafColorIndex = Math.floor(Math.random() * TREE_LEAVES_COLORS.length);
-  const leavesMaterial = new THREE.MeshLambertMaterial({
-    color: TREE_LEAVES_COLORS[randomLeafColorIndex],
-    flatShading: true // For low-poly look
-  });
-  
-  const leaves = new THREE.Mesh(leavesGeometry, leavesMaterial);
-  leaves.position.y = trunkHeight - leavesRadius * 0.2; // Position leaves on top of trunk
-  leaves.castShadow = true;
-  treeGroup.add(leaves);
-
-  treeGroup.userData = {
-    trunkHeight: trunkHeight,
-    leavesRadius: leavesRadius,
-    trunk: trunk, // Store reference to trunk for hive placement
-    leavesColor: TREE_LEAVES_COLORS[randomLeafColorIndex] // Store color for reference
-  };
-  
-  scene.add(treeGroup);
-  return treeGroup;
 }
 
-// Create the initial set of trees, including the special hive tree
-function createInitialTreesAndHive() {
-  // Create the "largest" tree for the hive with cherry blossom colors
-  hiveTree = createTree(0, -10, 1.5, 12, 4, 3); // x, z, trunkRadius, trunkHeight, leavesRadius, leavesHeight
-  
-  // Ensure hive tree has pink leaves
-  hiveTree.children[1].material.color.setHex(0xff9ff3); // Pink cherry blossom color
-  
-  trees.push(hiveTree);
-
-  // Create some other random trees
-  const numTrees = 25; // More trees for a denser forest
-  for (let i = 0; i < numTrees; i++) {
-    const x = (Math.random() - 0.5) * 150;
-    const z = (Math.random() - 0.5) * 150;
+// Create honeycomb pattern for hive
+function createHoneycombPattern() {
+  try {
+    const patternGroup = new THREE.Group();
     
-    // Avoid placing trees too close to the hive tree or origin
-    if (Math.sqrt(x * x + z * z) > 20) {
-      // More variation in tree sizes
-      const rTrunk = 0.5 + Math.random() * 1.2;
-      const hTrunk = 4 + Math.random() * 8;
-      const rLeaves = 2 + Math.random() * 4;
-      const hLeaves = 1 + Math.random() * 2;
-      trees.push(createTree(x, z, rTrunk, hTrunk, rLeaves, hLeaves));
+    // Create a few hexagons on the hive surface
+    const numHexagons = 12;
+    const hexSize = 0.2;
+    
+    for (let i = 0; i < numHexagons; i++) {
+      const hexGeometry = new THREE.CircleGeometry(hexSize, 6);
+      const hexMaterial = new THREE.MeshBasicMaterial({
+        color: 0xd0a000, // Darker yellow
+        transparent: true,
+        opacity: 0.8,
+        wireframe: true
+      });
+      
+      const hex = new THREE.Mesh(hexGeometry, hexMaterial);
+      
+      // Position hexagons randomly around the hive
+      const angle = Math.random() * Math.PI * 2;
+      const radiusVariation = 1.0 + (Math.random() * 0.3); 
+      
+      hex.position.x = Math.sin(angle) * radiusVariation;
+      hex.position.z = Math.cos(angle) * radiusVariation;
+      hex.position.y = -0.8 + Math.random() * 1.6; // Along the height of the hive
+      
+      // Rotate to face outward
+      hex.rotation.y = angle;
+      hex.rotation.x = Math.PI / 2;
+      
+      patternGroup.add(hex);
     }
+    
+    return patternGroup;
+  } catch (error) {
+    console.error("Error creating honeycomb pattern:", error);
+    return new THREE.Group(); // Return empty group if error occurs
   }
-  
-  createHive(); // Hive creation depends on hiveTree
 }

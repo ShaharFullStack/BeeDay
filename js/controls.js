@@ -114,231 +114,260 @@ function onMouseWheel(event) {
 
 // Mobile controls setup
 function setupMobileControls() {
-  // Setup joysticks
-  const leftJoystickElement = document.getElementById("joystick-left");
-  const rightJoystickElement = document.getElementById("joystick-right");
-  const actionButton = document.getElementById("action-button");
+  try {
+    // Setup joysticks
+    const leftJoystickElement = document.getElementById("joystick-left");
+    const rightJoystickElement = document.getElementById("joystick-right");
+    const actionButton = document.getElementById("action-button");
+    const heightUpButton = document.getElementById("height-up");
+    const heightDownButton = document.getElementById("height-down");
 
-  // Left joystick (look)
-  const leftJoystickKnob = leftJoystickElement.querySelector(".joystick-knob");
-  const hammerLeft = new Hammer(leftJoystickElement);
-  hammerLeft.get("pan").set({ direction: Hammer.DIRECTION_ALL });
+    // Left joystick (look)
+    const leftJoystickKnob = leftJoystickElement.querySelector(".joystick-knob");
+    const hammerLeft = new Hammer(leftJoystickElement);
+    hammerLeft.get("pan").set({ direction: Hammer.DIRECTION_ALL });
 
-  hammerLeft.on("panstart", function (ev) {
-    leftJoystick.active = true;
-    leftJoystick.startX = ev.center.x;
-    leftJoystick.startY = ev.center.y;
-  });
+    hammerLeft.on("panstart", function (ev) {
+      leftJoystick.active = true;
+      leftJoystick.startX = ev.center.x;
+      leftJoystick.startY = ev.center.y;
+    });
 
-  hammerLeft.on("panmove", function (ev) {
-    if (leftJoystick.active) {
-      // Calculate joystick movement (limited to joystick radius)
-      const deltaX = ev.center.x - leftJoystick.startX;
-      const deltaY = ev.center.y - leftJoystick.startY;
-      const distance = Math.min(
-        50,
-        Math.sqrt(deltaX * deltaX + deltaY * deltaY)
-      );
-      const angle = Math.atan2(deltaY, deltaX);
+    hammerLeft.on("panmove", function (ev) {
+      if (leftJoystick.active) {
+        // Calculate joystick movement (limited to joystick radius)
+        const deltaX = ev.center.x - leftJoystick.startX;
+        const deltaY = ev.center.y - leftJoystick.startY;
+        const distance = Math.min(
+          50,
+          Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+        );
+        const angle = Math.atan2(deltaY, deltaX);
 
-      // Update joystick position
-      const knobX = Math.cos(angle) * distance;
-      const knobY = Math.sin(angle) * distance;
-      leftJoystickKnob.style.transform = `translate(${knobX}px, ${knobY}px)`;
+        // Update joystick position
+        const knobX = Math.cos(angle) * distance;
+        const knobY = Math.sin(angle) * distance;
+        leftJoystickKnob.style.transform = `translate(${knobX}px, ${knobY}px)`;
 
-      // Update joystick values (normalized -1 to 1)
-      leftJoystick.moveX = knobX / 50;
-      leftJoystick.moveY = knobY / 50;
-    }
-  });
+        // Update joystick values (normalized -1 to 1)
+        leftJoystick.moveX = knobX / 50;
+        leftJoystick.moveY = knobY / 50;
+      }
+    });
 
-  hammerLeft.on("panend pancancel", function () {
-    leftJoystick.active = false;
-    leftJoystick.moveX = 0;
-    leftJoystick.moveY = 0;
-    leftJoystickKnob.style.transform = "translate(0px, 0px)";
-  });
+    hammerLeft.on("panend pancancel", function () {
+      leftJoystick.active = false;
+      leftJoystick.moveX = 0;
+      leftJoystick.moveY = 0;
+      leftJoystickKnob.style.transform = "translate(0px, 0px)";
+    });
 
-  // Right joystick (movement)
-  const rightJoystickKnob = rightJoystickElement.querySelector(".joystick-knob");
-  const hammerRight = new Hammer(rightJoystickElement);
-  hammerRight.get("pan").set({ direction: Hammer.DIRECTION_ALL });
+    // Right joystick (movement)
+    const rightJoystickKnob = rightJoystickElement.querySelector(".joystick-knob");
+    const hammerRight = new Hammer(rightJoystickElement);
+    hammerRight.get("pan").set({ direction: Hammer.DIRECTION_ALL });
 
-  hammerRight.on("panstart", function (ev) {
-    rightJoystick.active = true;
-    rightJoystick.startX = ev.center.x;
-    rightJoystick.startY = ev.center.y;
-  });
+    hammerRight.on("panstart", function (ev) {
+      rightJoystick.active = true;
+      rightJoystick.startX = ev.center.x;
+      rightJoystick.startY = ev.center.y;
+    });
 
-  hammerRight.on("panmove", function (ev) {
-    if (rightJoystick.active) {
-      const deltaX = ev.center.x - rightJoystick.startX;
-      const deltaY = ev.center.y - rightJoystick.startY;
-      const distance = Math.min(
-        50,
-        Math.sqrt(deltaX * deltaX + deltaY * deltaY)
-      );
-      const angle = Math.atan2(deltaY, deltaX);
+    hammerRight.on("panmove", function (ev) {
+      if (rightJoystick.active) {
+        const deltaX = ev.center.x - rightJoystick.startX;
+        const deltaY = ev.center.y - rightJoystick.startY;
+        const distance = Math.min(
+          50,
+          Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+        );
+        const angle = Math.atan2(deltaY, deltaX);
 
-      const knobX = Math.cos(angle) * distance;
-      const knobY = Math.sin(angle) * distance;
-      rightJoystickKnob.style.transform = `translate(${knobX}px, ${knobY}px)`;
+        const knobX = Math.cos(angle) * distance;
+        const knobY = Math.sin(angle) * distance;
+        rightJoystickKnob.style.transform = `translate(${knobX}px, ${knobY}px)`;
 
-      rightJoystick.moveX = knobX / 50;
-      rightJoystick.moveY = knobY / 50;
-    }
-  });
+        rightJoystick.moveX = knobX / 50;
+        rightJoystick.moveY = knobY / 50;
+      }
+    });
 
-  hammerRight.on("panend pancancel", function () {
-    rightJoystick.active = false;
-    rightJoystick.moveX = 0;
-    rightJoystick.moveY = 0;
-    rightJoystickKnob.style.transform = "translate(0px, 0px)";
-  });
-  // Action button
-  actionButton.addEventListener("touchstart", function (event) {
-    event.preventDefault();
-    handleAction();
-  });
+    hammerRight.on("panend pancancel", function () {
+      rightJoystick.active = false;
+      rightJoystick.moveX = 0;
+      rightJoystick.moveY = 0;
+      rightJoystickKnob.style.transform = "translate(0px, 0px)";
+    });
 
-  // Add height control buttons instead of pinch
-  const heightControlsContainer = document.getElementById("height-controls");
-  const upButton = document.getElementById("up-button");
-  const downButton = document.getElementById("down-button");
-  
-  if (heightControlsContainer && upButton && downButton) {
-    // Make height controls visible
-    heightControlsContainer.style.display = "flex";
-    
-    // Up button for increasing height
-    upButton.addEventListener("touchstart", function(event) {
+    // Action button - Collect/Deposit
+    actionButton.addEventListener("touchstart", function (event) {
       event.preventDefault();
-      const heightInterval = setInterval(() => {
-        bee.position.y += 0.5;
+      handleAction();
+    });    // Height control buttons
+    let heightInterval = null;
+    const heightStep = 0.5; // Smaller steps for smoother movement
+    
+    // Helper function to show height change feedback
+    function showHeightFeedback(direction) {
+      const message = direction === 'up' ? "Flying higher" : "Flying lower";
+      showMessage(message, 500);
+    }
+    
+    heightUpButton.addEventListener("touchstart", function(event) {
+      event.preventDefault();
+      if (bee && bee.position) {
+        bee.position.y += heightStep;
         if (bee.position.y > 80) bee.position.y = 80;
-      }, 100);
-      
-      // Clear interval when touch ends
-      const clearHeightInterval = () => {
+        
+        // Visual feedback
+        heightUpButton.style.backgroundColor = "rgba(116, 185, 255, 0.9)";
+        showHeightFeedback('up');
+        
+        // Set up interval for continuous movement while pressed
         clearInterval(heightInterval);
-        upButton.removeEventListener("touchend", clearHeightInterval);
-        upButton.removeEventListener("touchcancel", clearHeightInterval);
-      };
-      
-      upButton.addEventListener("touchend", clearHeightInterval);
-      upButton.addEventListener("touchcancel", clearHeightInterval);
+        heightInterval = setInterval(() => {
+          if (bee && bee.position) {
+            bee.position.y += heightStep;
+            if (bee.position.y > 80) bee.position.y = 80;
+          }
+        }, 100);
+      }
     });
     
-    // Down button for decreasing height
-    downButton.addEventListener("touchstart", function(event) {
-      event.preventDefault();
-      const heightInterval = setInterval(() => {
-        bee.position.y -= 0.5;
-        if (bee.position.y < 0.5) bee.position.y = 0.5;
-      }, 100);
-      
-      // Clear interval when touch ends
-      const clearHeightInterval = () => {
-        clearInterval(heightInterval);
-        downButton.removeEventListener("touchend", clearHeightInterval);
-        downButton.removeEventListener("touchcancel", clearHeightInterval);
-      };
-      
-      downButton.addEventListener("touchend", clearHeightInterval);
-      downButton.addEventListener("touchcancel", clearHeightInterval);
+    heightUpButton.addEventListener("touchend", function() {
+      clearInterval(heightInterval);
+      heightUpButton.style.backgroundColor = "rgba(116, 185, 255, 0.8)";
     });
-  } else {
-    console.warn("Height control buttons not found in the DOM");
+    
+    heightDownButton.addEventListener("touchstart", function(event) {
+      event.preventDefault();
+      if (bee && bee.position) {
+        bee.position.y -= heightStep;
+        if (bee.position.y < 0.5) bee.position.y = 0.5;
+        
+        // Visual feedback
+        heightDownButton.style.backgroundColor = "rgba(116, 185, 255, 0.9)";
+        showHeightFeedback('down');
+        
+        // Set up interval for continuous movement while pressed
+        clearInterval(heightInterval);
+        heightInterval = setInterval(() => {
+          if (bee && bee.position) {
+            bee.position.y -= heightStep;
+            if (bee.position.y < 0.5) bee.position.y = 0.5;
+          }
+        }, 100);
+      }
+    });
+    
+    heightDownButton.addEventListener("touchend", function() {
+      clearInterval(heightInterval);
+      heightDownButton.style.backgroundColor = "rgba(116, 185, 255, 0.8)";
+    });
+      // Also handle touchcancel event to clear interval
+    heightUpButton.addEventListener("touchcancel", function() {
+      clearInterval(heightInterval);
+      heightUpButton.style.backgroundColor = "rgba(116, 185, 255, 0.8)";
+    });
+    
+    heightDownButton.addEventListener("touchcancel", function() {
+      clearInterval(heightInterval);
+      heightDownButton.style.backgroundColor = "rgba(116, 185, 255, 0.8)";
+    });
+
+  } catch (error) {
+    console.error("Error setting up mobile controls:", error);
+    const errorMsg = document.getElementById("error-message");
+    if (errorMsg) {
+      errorMsg.textContent = "Mobile controls error: " + error.message;
+      errorMsg.style.display = "block";
+    }
   }
-  
-  // Disable the global pinch gesture that was causing issues
-  // hammerBody.get("pinch").set({ enable: true });
-  // 
-  // hammerBody.on("pinchstart", function (ev) {
-  //   pinchStartDistance = ev.scale;
-  // });
-  // 
-  // hammerBody.on("pinchmove", function (ev) {
-  //   if (pinchStartDistance) {
-  //     const pinchDelta = ev.scale - pinchStartDistance;
-  //     bee.position.y += pinchDelta * 2; // Adjust sensitivity as needed
-  // 
-  //     // Keep height within bounds
-  //     if (bee.position.y < 0.5) bee.position.y = 0.5;
-  //     if (bee.position.y > 80) bee.position.y = 80;
-  //     pinchStartDistance = ev.scale;
-  //   }
-  // });
 }
 
 // Process all current movement inputs and update the bee position
 function updateBeeMovement() {
-  // First calculate direction vector
-  moveDirection.set(0, 0, 0);
-  
-  if (isMobile) {
-    // Handle mobile controls
-    if (leftJoystick.active) {
-      // Look around with left joystick
-      bee.rotation.y -= leftJoystick.moveX * 0.05;
-      camera.rotation.x -= leftJoystick.moveY * 0.05;
-      camera.rotation.x = Math.max(
-        -Math.PI / 2,
-        Math.min(Math.PI / 2, camera.rotation.x)
-      );
+  try {
+    // First calculate direction vector
+    moveDirection.set(0, 0, 0);
+    
+    if (isMobile) {
+      // Handle mobile controls
+      if (leftJoystick.active) {
+        // Look around with left joystick
+        if (bee && bee.rotation) {
+          bee.rotation.y -= leftJoystick.moveX * 0.05;
+        }
+        if (camera && camera.rotation) {
+          camera.rotation.x -= leftJoystick.moveY * 0.05;
+          camera.rotation.x = Math.max(
+            -Math.PI / 2,
+            Math.min(Math.PI / 2, camera.rotation.x)
+          );
+        }
+      }
+
+      if (rightJoystick.active) {
+        // Move with right joystick
+        // Use direction vector for movement
+        moveDirection.z = -rightJoystick.moveY;
+        moveDirection.x = rightJoystick.moveX;
+      }
+    } else {
+      // Handle desktop controls
+      if (!isPointerLocked) return;
+      
+      if (keysPressed["w"]) moveDirection.z = -1;
+      if (keysPressed["s"]) moveDirection.z = 1;
+      if (keysPressed["a"]) moveDirection.x = -1;
+      if (keysPressed["d"]) moveDirection.x = 1;
+      if (keysPressed["r"] && bee && bee.position) bee.position.y += MOVE_SPEED * (keysPressed["shift"] ? 1.8 : 1);
+      if (keysPressed["f"] && bee && bee.position) bee.position.y -= MOVE_SPEED * (keysPressed["shift"] ? 1.8 : 1);
+    }
+    
+    // Apply movement if there is any direction
+    if (moveDirection.length() > 0 && bee) {
+      // Normalize movement direction
+      moveDirection.normalize();
+      
+      // Add a multiplier for diagonal movement
+      const currentSpeed = MOVE_SPEED * (keysPressed["shift"] ? 1.8 : 1);
+      
+      // Set bee's local direction and apply speed
+      moveVelocity.copy(moveDirection).multiplyScalar(currentSpeed);
+      
+      // Apply movement relative to bee's rotation
+      bee.translateZ(moveVelocity.z);
+      bee.translateX(moveVelocity.x * 0.8); // Slightly slower sideways movement
     }
 
-    if (rightJoystick.active) {
-      // Move with right joystick
-      // Use direction vector for movement
-      moveDirection.z = -rightJoystick.moveY;
-      moveDirection.x = rightJoystick.moveX;
+    // Ensure bee stays within bounds (applies to both mobile and desktop)
+    if (bee && bee.position) {
+      if (bee.position.y < 0.5) bee.position.y = 0.5;
+      if (bee.position.y > 80) bee.position.y = 80;
     }
-  } else {
-    // Handle desktop controls
-    if (!isPointerLocked) return;
-    
-    if (keysPressed["w"]) moveDirection.z = -1;
-    if (keysPressed["s"]) moveDirection.z = 1;
-    if (keysPressed["a"]) moveDirection.x = -1;
-    if (keysPressed["d"]) moveDirection.x = 1;
-    if (keysPressed["r"]) bee.position.y += MOVE_SPEED * (keysPressed["shift"] ? 1.8 : 1);
-    if (keysPressed["f"]) bee.position.y -= MOVE_SPEED * (keysPressed["shift"] ? 1.8 : 1);
-  }
-  
-  // Apply movement if there is any direction
-  if (moveDirection.length() > 0) {
-    // Normalize movement direction
-    moveDirection.normalize();
-    
-    // Add a multiplier for diagonal movement
-    const currentSpeed = MOVE_SPEED * (keysPressed["shift"] ? 1.8 : 1);
-    
-    // Set bee's local direction and apply speed
-    moveVelocity.copy(moveDirection).multiplyScalar(currentSpeed);
-    
-    // Apply movement relative to bee's rotation
-    bee.translateZ(moveVelocity.z);
-    bee.translateX(moveVelocity.x * 0.8); // Slightly slower sideways movement
-  }
 
-  // Ensure bee stays within bounds (applies to both mobile and desktop)
-  if (bee.position.y < 0.5) bee.position.y = 0.5;
-  if (bee.position.y > 80) bee.position.y = 80;
+    // Animate bee wings
+    const flapSpeed = 0.03;
+    if (beeWings && beeWings.children && beeWings.children.length >= 2) {
+      beeWings.children[0].rotation.x = Math.sin(Date.now() * flapSpeed) * 0.6;
+      beeWings.children[1].rotation.x = Math.sin(Date.now() * flapSpeed) * 0.6;
+    }
 
-  // Animate bee wings
-  const flapSpeed = 0.03;
-  if (beeWings && beeWings.children && beeWings.children.length >= 2) {
-    beeWings.children[0].rotation.x = Math.sin(Date.now() * flapSpeed) * 0.6;
-    beeWings.children[1].rotation.x = Math.sin(Date.now() * flapSpeed) * 0.6;
-  }
-
-  // World boundaries (relative to the large ground plane)
-  if (ground && ground.geometry) {
-    const worldBoundary = ground.geometry.parameters.width / 2 - 10; // Keep bee within ground
-    if (bee.position.x > worldBoundary) bee.position.x = worldBoundary;
-    if (bee.position.x < -worldBoundary) bee.position.x = -worldBoundary;
-    if (bee.position.z > worldBoundary) bee.position.z = worldBoundary;
-    if (bee.position.z < -worldBoundary) bee.position.z = -worldBoundary;
+    // World boundaries (relative to the large ground plane)
+    if (ground && ground.geometry && bee && bee.position) {
+      const worldBoundary = ground.geometry.parameters.width / 2 - 10; // Keep bee within ground
+      if (bee.position.x > worldBoundary) bee.position.x = worldBoundary;
+      if (bee.position.x < -worldBoundary) bee.position.x = -worldBoundary;
+      if (bee.position.z > worldBoundary) bee.position.z = worldBoundary;
+      if (bee.position.z < -worldBoundary) bee.position.z = -worldBoundary;
+    }
+  } catch (error) {
+    console.error("Error in updateBeeMovement:", error);
+    const errorMsg = document.getElementById("error-message");
+    if (errorMsg) {
+      errorMsg.textContent = "Movement error: " + error.message;
+      errorMsg.style.display = "block";
+    }
   }
 }

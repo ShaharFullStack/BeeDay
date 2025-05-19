@@ -45,9 +45,7 @@ const GROUND_COLOR = 0x81ecec; // Light turquoise
 const SKY_COLOR = 0x74b9ff; // Light blue sky
 
 // Device detection
-const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-  navigator.userAgent
-);
+let isMobile = false; // Will be set in detectMobile()
 
 // Low-poly settings
 const LOW_POLY_SEGMENTS = 4; // Lower number = more faceted/low-poly look

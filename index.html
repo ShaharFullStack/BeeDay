@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
     />
-    <title>🐝Bee Day!🍯</title>
+    <title>BeeSim: Endless Fields & Trees</title>
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23FFD700'/%3E%3C!-- Bee Body --%3E%3Cellipse cx='50' cy='50' rx='25' ry='18' fill='%23000000'/%3E%3Cellipse cx='50' cy='50' rx='22' ry='15' fill='%23FFD700'/%3E%3C!-- Stripes --%3E%3Crect x='30' y='40' width='40' height='5' fill='%23000000'/%3E%3Crect x='28' y='55' width='44' height='5' fill='%23000000'/%3E%3C!-- Wings --%3E%3Cellipse cx='35' cy='35' rx='15' ry='8' fill='rgba(173,216,230,0.8)' transform='rotate(-30 35 35)'/%3E%3Cellipse cx='65' cy='35' rx='15' ry='8' fill='rgba(173,216,230,0.8)' transform='rotate(30 65 35)'/%3E%3C!-- Eyes --%3E%3Ccircle cx='40' cy='45' r='3' fill='%23000000'/%3E%3Ccircle cx='60' cy='45' r='3' fill='%23000000'/%3E%3C/svg%3E"
@@ -21,9 +21,9 @@
     <!-- Home Page -->
     <div id="home-page">
       <div class="title-container">
-        <h1>🐝Bee Day!🐝</h1>
-        <h2> Makeing Honey!🍯</h2>
-        <button id="start-game-btn">Bzzzz...🐝</button>
+        <h1>BeeSim</h1>
+        <h2>Endless Fields & Trees</h2>
+        <button id="start-game-btn">Start Flying</button>
       </div>
     </div>
 
@@ -48,7 +48,8 @@
           <p>Shift: Move faster</p>
           <p>Space: Collect/Deposit</p>
           <p>(Click the screen to enable mouse control)</p>
-        </div>        <div class="mobile-controls">
+        </div>
+        <div class="mobile-controls">
           <p>Controls:</p>
           <p>Left joystick: Look around</p>
           <p>Right joystick: Move</p>
@@ -57,31 +58,34 @@
         </div>
       </div>
       <div id="message-box"></div>
+      <div id="pointer-lock-info">Click to start playing!</div>
       <div id="tilt-notification">Please tilt your device to start playing!</div>
 
       <!-- Mobile Controls -->
       <div id="joystick-left">
         <div class="joystick-knob"></div>
-      </div>      <div id="joystick-right">
+      </div>
+      <div id="joystick-right">
         <div class="joystick-knob"></div>
+      </div>      <div id="mobile-height-controls">
+        <div id="height-up">⬆️<span class="control-hint">UP</span></div>
+        <div id="height-down">⬇️<span class="control-hint">DOWN</span></div>
       </div>
       <div id="mobile-buttons">
         <div id="action-button">COLLECT / DEPOSIT</div>
       </div>
-      <div id="height-controls">
-        <div id="up-button">↑</div>
-        <div id="down-button">↓</div>
-      </div>
+      
+      <!-- Error message for debugging -->
+      <div id="error-message"></div>
     </div>
 
     <!-- Core JavaScript Files -->
-    <script src="js/config.js"></script>
-    <script src="js/utils.js"></script>
+    <script src="js/config.js"></script>    <script src="js/utils.js"></script>
     <script src="js/ui.js"></script>
-    <script src="js/controls.js"></script>
-    <script src="js/entities/bee.js"></script>
+    <script src="js/controls.js"></script>    <script src="js/entities/bee.js"></script>
     <script src="js/entities/flower.js"></script>
     <script src="js/entities/tree.js"></script>
+    <script src="js/entities/createTree.js"></script>
     <script src="js/entities/hive.js"></script>
     <script src="js/world.js"></script>
     <script src="js/game.js"></script>

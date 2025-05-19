@@ -5,12 +5,19 @@ body {
   background-color: #74b9ff; /* Match the new sky color */
   cursor: crosshair;
   touch-action: none;
+  width: 100%;
+  height: 100%;
+  position: fixed;
 }
 
 canvas {
   display: block;
   width: 100%;
   height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
 }
 
 /* Homepage Styles */
@@ -74,6 +81,16 @@ canvas {
 }
 
 /* Game UI Styles */
+#game-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  pointer-events: none; /* Let clicks pass through to the canvas */
+}
+
 #ui-container {
   position: absolute;
   top: 10px;
@@ -84,6 +101,7 @@ canvas {
   border-radius: 8px;
   font-size: 16px;
   z-index: 10;
+  pointer-events: auto; /* Make the UI clickable */
 }
 
 #controls-info {
@@ -97,6 +115,7 @@ canvas {
   font-size: 14px;
   z-index: 10;
   transition: opacity 1s ease-in-out;
+  pointer-events: auto; /* Make the UI clickable */
 }
 
 #message-box {
@@ -114,6 +133,7 @@ canvas {
   z-index: 100;
   border: 2px solid #e17055; /* Orange border */
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  pointer-events: auto; /* Make the UI clickable */
 }
 
 #pointer-lock-info {
@@ -128,6 +148,7 @@ canvas {
   font-size: 20px;
   text-align: center;
   z-index: 101; /* Above message box */
+  pointer-events: auto; /* Make the UI clickable */
 }
 
 #tilt-notification {
@@ -143,67 +164,33 @@ canvas {
   text-align: center;
   z-index: 102; /* Above all other overlays */
   display: none;
+  pointer-events: auto; /* Make the UI clickable */
 }
 
+#error-message {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 0, 0, 0.8);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  z-index: 1000;
+  display: none;
+  max-width: 80%;
+  text-align: center;
+}
+
+/* Mobile controls */
 #mobile-buttons {
   position: absolute;
   bottom: 20px;
   right: 20px;
   z-index: 10;
   display: none; /* Hidden by default, shown on mobile */
-}
-
-#height-controls {
-  position: absolute;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
-  z-index: 10;
-  display: none; /* Hidden by default, shown on mobile */
-  flex-direction: column;
-  gap: 20px;
-}
-
-#up-button, #down-button {
-  width: 70px;
-  height: 70px;
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-size: 32px;
-  font-weight: bold;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-
-#up-button:active, #down-button:active {
-  background-color: rgba(255, 255, 255, 0.3);
-  transform: scale(0.95);
-  transition: all 0.1s;
-}
-
-/* Add a subtle indicator to show the direction */
-#up-button::after, #down-button::after {
-  content: '';
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-}
-
-#up-button::after {
-  transform: translateY(-15px);
-}
-
-#down-button::after {
-  transform: translateY(15px);
+  pointer-events: auto;
 }
 
 #action-button {
@@ -219,6 +206,51 @@ canvas {
   font-size: 14px;
   border: 2px solid #e17055; /* Orange border */
   user-select: none;
+  pointer-events: auto;
+}
+
+#mobile-height-controls {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: none; /* Hidden by default, shown on mobile */
+  pointer-events: auto;
+}
+
+#height-up, #height-down {
+  width: 60px;
+  height: 60px;
+  background-color: rgba(116, 185, 255, 0.8); /* Slightly more opaque sky blue */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: white;
+  font-size: 24px;
+  margin: 15px 0; /* Increased vertical spacing */
+  border: 3px solid rgba(255, 255, 255, 0.7); /* More visible border */
+  user-select: none;
+  pointer-events: auto;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Add subtle shadow */
+  transition: all 0.2s ease; /* Smooth transition for hover/active states */
+  position: relative;
+}
+
+.control-hint {
+  position: absolute;
+  font-size: 10px;
+  bottom: 8px;
+  color: white;
+  font-weight: bold;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+#height-up:active, #height-down:active {
+  transform: scale(0.95); /* Slight scale down effect when pressed */
+  background-color: rgba(116, 185, 255, 0.9); /* Darker when pressed */
 }
 
 #joystick-left,
@@ -232,6 +264,7 @@ canvas {
   display: none; /* Hidden by default */
   touch-action: none;
   z-index: 10;
+  pointer-events: auto; /* Make the joysticks accept touch events */
 }
 
 #joystick-left {
@@ -263,15 +296,35 @@ canvas {
   display: none;
 }
 
+/* Ensure mobile controls are displayed when the mobile-device class is present */
+body.mobile-device .mobile-controls {
+  display: block !important;
+}
+
+body.mobile-device #joystick-left,
+body.mobile-device #joystick-right,
+body.mobile-device #mobile-buttons,
+body.mobile-device #mobile-height-controls {
+  display: block !important;
+}
+
+body.mobile-device .desktop-controls,
+body.mobile-device #pointer-lock-info {
+  display: none !important;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   #controls-info {
     font-size: 12px;
     max-width: 150px;
-    bottom: 70px;
+    bottom: 90px;
   }
   #ui-container {
     font-size: 14px;
+    padding: 8px;
+    top: 5px;
+    left: 5px;
   }
   #message-box {
     font-size: 16px;
@@ -281,17 +334,28 @@ canvas {
   #pointer-lock-info {
     display: none !important; /* Never show on mobile */
   }
-  .mobile-controls {
-    display: block !important;
-  }  #joystick-left,
-  #joystick-right,
-  #mobile-buttons,
-  #height-controls {
-    display: block; /* Show on mobile */
+  
+  /* Adjust height controls position for smaller screens */
+  #mobile-height-controls {
+    right: 15px; /* Move slightly closer to edge */
   }
   
-  #height-controls {
-    display: flex; /* Override to use flex display */
+  /* Make height control buttons smaller on very small screens */
+  @media (max-width: 360px) {
+    #height-up, #height-down {
+      width: 50px;
+      height: 50px;
+      font-size: 20px;
+    }
+  }
+  .mobile-controls {
+    display: block !important;
+  }
+  #joystick-left,
+  #joystick-right,
+  #mobile-buttons,
+  #mobile-height-controls {
+    display: block; /* Show on mobile */
   }
   
   .title-container h1 {
@@ -315,6 +379,7 @@ canvas {
   #joystick-left,
   #joystick-right,
   #mobile-buttons,
+  #mobile-height-controls,
   .mobile-controls {
     display: none !important; /* Never show on desktop */
   }

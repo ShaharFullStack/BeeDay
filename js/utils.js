@@ -1,117 +1,173 @@
 // Utility functions
 
+// Device detection function
+function detectMobile() {
+  try {
+    isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+    console.log("Device detection: " + (isMobile ? "Mobile" : "Desktop"));
+    
+    // Add a debug message that will appear for a moment to indicate device type
+    const errorMsg = document.getElementById("error-message");
+    if (errorMsg) {
+      errorMsg.textContent = "Device detected: " + (isMobile ? "Mobile" : "Desktop");
+      errorMsg.style.display = "block";
+      setTimeout(() => {
+        errorMsg.style.display = "none";
+      }, 3000);
+    }
+  } catch (error) {
+    console.error("Error in device detection:", error);
+  }
+}
+
+// Expose functions to global scope
+window.detectMobile = detectMobile;
+window.showMessage = showMessage;
+window.applyDeviceSpecificStyles = applyDeviceSpecificStyles;
+window.requestDeviceOrientationPermission = requestDeviceOrientationPermission;
+window.handleDeviceOrientation = handleDeviceOrientation;
+window.onWindowResize = onWindowResize;
+
 // Show message in the message box
 let messageTimeout;
 function showMessage(text, duration = 2000) {
-  const messageBox = document.getElementById("message-box");
-  messageBox.textContent = text;
-  messageBox.style.display = "block";
-  clearTimeout(messageTimeout);
-  messageTimeout = setTimeout(() => {
-    messageBox.style.display = "none";
-  }, duration);
+  try {
+    const messageBox = document.getElementById("message-box");
+    if (messageBox) {
+      messageBox.textContent = text;
+      messageBox.style.display = "block";
+      clearTimeout(messageTimeout);
+      messageTimeout = setTimeout(() => {
+        messageBox.style.display = "none";
+      }, duration);
+    }
+  } catch (error) {
+    console.error("Error showing message:", error);
+  }
 }
 
 // Apply styles based on device type
 function applyDeviceSpecificStyles() {
-  // The CSS media queries handle most styling, but we might need to adjust some elements dynamically
-  if (isMobile) {
-    document.querySelector(".desktop-controls").style.display = "none";
-    document.querySelector(".mobile-controls").style.display = "block";    // Show joysticks and action button
-    document.getElementById("joystick-left").style.display = "block";
-    document.getElementById("joystick-right").style.display = "block";
-    document.getElementById("mobile-buttons").style.display = "block";
-    document.getElementById("height-controls").style.display = "flex";
-
-    // Hide pointer lock info
-    document.getElementById("pointer-lock-info").style.display = "none";
-  } else {
-    document.querySelector(".desktop-controls").style.display = "block";
-    document.querySelector(".mobile-controls").style.display = "none";    // Hide all mobile controls
-    document.getElementById("joystick-left").style.display = "none";
-    document.getElementById("joystick-right").style.display = "none";
-    document.getElementById("mobile-buttons").style.display = "none";
-    document.getElementById("height-controls").style.display = "none";
-    document.getElementById("tilt-notification").style.display = "none";
+  try {
+    // The CSS media queries handle most styling, but we might need to adjust some elements dynamically
+    if (isMobile) {
+      const desktopControls = document.querySelector(".desktop-controls");
+      const mobileControls = document.querySelector(".mobile-controls");
+      const joystickLeft = document.getElementById("joystick-left");
+      const joystickRight = document.getElementById("joystick-right");
+      const mobileButtons = document.getElementById("mobile-buttons");
+      const mobileHeightControls = document.getElementById("mobile-height-controls");
+      const pointerLockInfo = document.getElementById("pointer-lock-info");
+      const tiltNotification = document.getElementById("tilt-notification");
+      
+      if (desktopControls) desktopControls.style.display = "none";
+      if (mobileControls) mobileControls.style.display = "block";
+      if (joystickLeft) joystickLeft.style.display = "block";
+      if (joystickRight) joystickRight.style.display = "block";
+      if (mobileButtons) mobileButtons.style.display = "block";
+      if (mobileHeightControls) mobileHeightControls.style.display = "block";
+      if (pointerLockInfo) pointerLockInfo.style.display = "none";
+      if (tiltNotification) tiltNotification.style.display = "block";
+      
+      // Force-disable any CSS media queries that might hide mobile controls
+      document.body.classList.add("mobile-device");
+      
+      // Log to console that mobile controls are enabled
+      console.log("Mobile controls enabled");
+    } else {
+      const desktopControls = document.querySelector(".desktop-controls");
+      const mobileControls = document.querySelector(".mobile-controls");
+      const joystickLeft = document.getElementById("joystick-left");
+      const joystickRight = document.getElementById("joystick-right");
+      const mobileButtons = document.getElementById("mobile-buttons");
+      const mobileHeightControls = document.getElementById("mobile-height-controls");
+      const tiltNotification = document.getElementById("tilt-notification");
+      
+      if (desktopControls) desktopControls.style.display = "block";
+      if (mobileControls) mobileControls.style.display = "none";
+      if (joystickLeft) joystickLeft.style.display = "none";
+      if (joystickRight) joystickRight.style.display = "none";
+      if (mobileButtons) mobileButtons.style.display = "none";
+      if (mobileHeightControls) mobileHeightControls.style.display = "none";
+      if (tiltNotification) tiltNotification.style.display = "none";
+      
+      // Ensure desktop mode is enabled
+      document.body.classList.remove("mobile-device");
+      
+      // Log to console that desktop controls are enabled
+      console.log("Desktop controls enabled");
+    }
+  } catch (error) {
+    console.error("Error applying device-specific styles:", error);
   }
 }
 
 // Request device orientation permission on iOS devices
 function requestDeviceOrientationPermission() {
-  if (deviceOrientationPermissionRequested) return;
-
-  if (
-    typeof DeviceOrientationEvent !== "undefined" &&
-    typeof DeviceOrientationEvent.requestPermission === "function"
-  ) {
-    // iOS 13+ requires permission
-    document.body.addEventListener(
-      "click",
-      () => {
-        if (!deviceOrientationPermissionRequested) {
-          DeviceOrientationEvent.requestPermission()
-            .then((permissionState) => {
-              if (permissionState === "granted") {
-                window.addEventListener(
-                  "deviceorientation",
-                  handleDeviceOrientation
-                );
-              }
-              deviceOrientationPermissionRequested = true;
-            })
-            .catch(console.error);
-        }
-      },
-      { once: true }
-    );
-  } else {
-    // Non-iOS devices
-    window.addEventListener("deviceorientation", handleDeviceOrientation);
-    deviceOrientationPermissionRequested = true;
+  try {
+    if (deviceOrientationPermissionRequested) return;
+  
+    if (
+      typeof DeviceOrientationEvent !== "undefined" &&
+      typeof DeviceOrientationEvent.requestPermission === "function"
+    ) {
+      // iOS 13+ requires permission
+      document.body.addEventListener(
+        "click",
+        () => {
+          if (!deviceOrientationPermissionRequested) {
+            DeviceOrientationEvent.requestPermission()
+              .then((permissionState) => {
+                if (permissionState === "granted") {
+                  window.addEventListener(
+                    "deviceorientation",
+                    handleDeviceOrientation
+                  );
+                }
+                deviceOrientationPermissionRequested = true;
+              })
+              .catch(console.error);
+          }
+        },
+        { once: true }
+      );
+    } else {
+      // Non-iOS devices
+      window.addEventListener("deviceorientation", handleDeviceOrientation);
+      deviceOrientationPermissionRequested = true;
+    }
+  } catch (error) {
+    console.error("Error requesting device orientation permission:", error);
   }
 }
 
 // Handle device orientation for mobile tilt detection
 function handleDeviceOrientation(event) {
-  if (!hasTilted && (Math.abs(event.beta) > 25 || Math.abs(event.gamma) > 25)) {
-    hasTilted = true;
-    document.getElementById("tilt-notification").style.display = "none";
-    showMessage("Device tilted! You're ready to fly.", 2000);
+  try {
+    if (!hasTilted && (Math.abs(event.beta) > 25 || Math.abs(event.gamma) > 25)) {
+      hasTilted = true;
+      const tiltNotification = document.getElementById("tilt-notification");
+      if (tiltNotification) {
+        tiltNotification.style.display = "none";
+      }
+      showMessage("Device tilted! You're ready to fly.", 2000);
+    }
+  } catch (error) {
+    console.error("Error handling device orientation:", error);
   }
 }
 
 // Resize handler for window
 function onWindowResize() {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-}
-
-// Utility functions for the game
-
-// Detect if running on a mobile device
-function detectMobile() {
-  isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent
-  );
-
-  // Add classes to body for CSS targeting
-  document.body.classList.add(isMobile ? "mobile" : "desktop");
-  
-  // On mobile, prevent default touch actions that might interfere with game controls
-  if (isMobile) {
-    // Prevent default touch actions like scrolling, zooming, etc.
-    document.addEventListener('touchmove', function(e) {
-      if (e.target.id !== 'home-page' && !e.target.closest('#controls-info')) {
-        e.preventDefault();
-      }
-    }, { passive: false });
-    
-    // Disable context menu on long-press
-    document.addEventListener('contextmenu', function(e) {
-      if (e.target.id !== 'home-page') {
-        e.preventDefault();
-      }
-    });
+  try {
+    if (camera && renderer) {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+  } catch (error) {
+    console.error("Error resizing window:", error);
   }
 }
