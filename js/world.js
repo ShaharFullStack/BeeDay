@@ -1,13 +1,13 @@
 // World creation and management
 
 // Create and set up the basic world elements (ground, lighting)
-function setupWorld() {
-  setupLighting();
-  createGround(1000); // Much larger ground plane
+function setupWorld(scene) {
+  setupLighting(scene);
+  // Note: createGround is now called directly from game.js
 }
 
 // Setup scene lighting
-function setupLighting() {
+function setupLighting(scene) {
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
   scene.add(ambientLight);
   
@@ -26,13 +26,16 @@ function setupLighting() {
 }
 
 // Create the ground plane
-function createGround(size) {
+function createGround(scene, size) {
   const groundGeometry = new THREE.PlaneGeometry(size, size);
   const groundMaterial = new THREE.MeshLambertMaterial({
     color: 0x55aa55,
   }); // Greenish
-  ground = new THREE.Mesh(groundGeometry, groundMaterial);
+  const ground = new THREE.Mesh(groundGeometry, groundMaterial);
   ground.rotation.x = -Math.PI / 2;
   ground.receiveShadow = true;
   scene.add(ground);
+  
+  // Return the ground object so it can be assigned to the global variable
+  return ground;
 }

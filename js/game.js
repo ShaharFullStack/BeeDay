@@ -32,11 +32,11 @@ function init() {
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.shadowMap.enabled = true;
-  document.body.appendChild(renderer.domElement);
+  renderer.shadowMap.enabled = true;  document.body.appendChild(renderer.domElement);
 
   // Set up the world, entities, and mechanics
-  setupWorld();
+  setupWorld(scene);
+  ground = createGround(scene, 1000);
   createBee();
   createInitialTreesAndHive();
 
@@ -46,6 +46,11 @@ function init() {
   // Set up event handlers
   setupEventListeners();
   updateUI();
+
+  // Make sure controls are visible at start
+  const controlsInfo = document.getElementById("controls-info");
+  controlsInfo.style.opacity = "1";
+  controlsInfo.style.display = "block";
 
   // Apply device-specific styles
   applyDeviceSpecificStyles();

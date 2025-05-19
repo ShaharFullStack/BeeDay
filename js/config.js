@@ -6,9 +6,9 @@ const HARVEST_RANGE = 0.2;
 const DEPOSIT_RANGE = 4.5;
 
 // Movement settings
-const MOVE_SPEED = 0.1;
+const MOVE_SPEED = 0.025;
 const MOUSE_SENSITIVITY = 0.002;
-const MOUSE_WHEEL_SENSITIVITY = 0.01;
+const MOUSE_WHEEL_SENSITIVITY = 0.025;
 
 // Endless field generation
 const CELL_SIZE = 20;
