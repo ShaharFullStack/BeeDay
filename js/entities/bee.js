@@ -1,6 +1,3 @@
-// Bee entity creation and management
-
-// Create the bee with its body and wings
 function createBee() {
   try {
     bee = new THREE.Group();
@@ -120,11 +117,12 @@ function createBee() {
 
     // Assuming 'scene' is defined elsewhere and is a THREE.Scene instance
     if (scene) {
-       scene.add(bee);
+      scene.add(bee);
     } else {
       console.warn("Scene object not found. Cannot add bee to scene.");
     }
-
+    
+    bee.scale.set(0.5, 0.5, 0.5); // Scale down to half size
     return bee; // Return the bee object
   } catch (error) {
     console.error("Error creating bee:", error);
