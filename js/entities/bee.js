@@ -109,7 +109,6 @@ function createBee() {
     // Assuming 'camera' is defined elsewhere and is a THREE.Camera instance
     if (camera) {
       camera.position.set(0, 1.25, 2.05);
-      camera.lookAt(bee.position);
       bee.add(camera);
     } else {
       console.warn("Camera object not found. Cannot attach camera to bee.");

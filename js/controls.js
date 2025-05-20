@@ -378,8 +378,8 @@ function updateBeeMovement() {
     // Animate bee wings
     const flapSpeed = 0.03;
     if (beeWings && beeWings.children && beeWings.children.length >= 2) {
-      beeWings.children[0].rotation.x = Math.sin(Date.now() * flapSpeed) * 0.6;
-      beeWings.children[1].rotation.x = Math.sin(Date.now() * flapSpeed) * 0.6;
+      beeWings.children[0].rotation.x = Math.sin(Date.now() * flapSpeed) * 5;
+      beeWings.children[1].rotation.x = Math.sin(Date.now() * flapSpeed) * 5;
     }
 
     // World boundaries (relative to the large ground plane)

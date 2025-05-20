@@ -3,7 +3,7 @@
 // Create and set up the basic world elements (ground, lighting)
 function setupWorld() {
   setupLighting();
-  createGround(1000); // Much larger ground plane
+  createGround(1000); 
 }
 
 // Setup scene lighting
@@ -56,7 +56,9 @@ function createGround(size) {
     const groundMaterial = new THREE.MeshPhongMaterial({
       color: GROUND_COLOR,
       flatShading: true,
-      wireframe: false
+      wireframe: false,
+      metalness: 0,
+      roughness: 0.9,
     });
     
     // Create the ground mesh and add it to the scene
@@ -80,9 +82,9 @@ function createHexagonPattern(size) {
     const hexSize = 10;
     const hexGeometry = new THREE.CircleGeometry(hexSize, 6);
     const hexMaterial = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
+      color: 0xffffff00,
       transparent: true,
-      opacity: 0.15,
+      opacity: 0,
       wireframe: true
     });
     
