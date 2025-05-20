@@ -70,11 +70,11 @@ function createInitialTreesAndHive() {
       }
 
       // Create several trees around the starting area
-      const treeCount = 10;
-      const treeRadius = 25; // Spread trees in a circle of this radius
+      const treeCount = 30;
+      const treeRadius = 45; // Spread trees in a circle of this radius
 
       // Create the special hive tree first
-      hiveTree = createTree(15, 15, true); // Place the hive tree at a fixed position
+      hiveTree = createTree(2, 1, true); // Place the hive tree at a fixed position
 
       if (!hiveTree) {
         console.error("Failed to create hive tree!");

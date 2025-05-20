@@ -219,7 +219,6 @@ function checkUiElements() {
     controlsInfo: !!document.getElementById("controls-info"),
     messageBox: !!document.getElementById("message-box"),
     errorMessage: !!document.getElementById("error-message"),
-    pointerLockInfo: !!document.getElementById("pointer-lock-info")
   };
 
   // Add mobile-specific elements if on mobile

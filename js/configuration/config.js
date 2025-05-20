@@ -39,7 +39,7 @@ const TREE_LEAVES_COLORS = [
 ];
 
 // Ground color
-const GROUND_COLOR = 0x2e6b48; // Light turquoise
+const GROUND_COLOR = 0x2e6b48; // Dark green grass
 
 // Sky color
 const SKY_COLOR = 0x74b9ff; // Light blue sky
