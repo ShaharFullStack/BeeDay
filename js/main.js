@@ -7,7 +7,7 @@ function hideControlsAfterDelay() {
     if (controlsInfo) {
       // Fade out the controls smoothly
       controlsInfo.style.opacity = "1";
-      
+
       const fadeOut = () => {
         if (parseFloat(controlsInfo.style.opacity) > 0) {
           controlsInfo.style.opacity = parseFloat(controlsInfo.style.opacity) - 0.05;
@@ -16,7 +16,7 @@ function hideControlsAfterDelay() {
           controlsInfo.style.display = "none";
         }
       };
-      
+
       fadeOut();
     }
   }, 15000); // 15 seconds
@@ -29,7 +29,7 @@ function showError(message) {
   if (errorMsg) {
     errorMsg.textContent = message;
     errorMsg.style.display = "block";
-    
+
     // Auto-hide error after 8 seconds
     setTimeout(() => {
       errorMsg.style.display = "none";
@@ -45,7 +45,7 @@ function setupHomePage() {
     if (playerNameElement) {
       playerNameElement.textContent = gameState.currentUser.name;
     }
-    
+
     // Show/hide multiplayer toggle based on user type
     const multiplayerToggle = document.getElementById("multiplayer-toggle");
     if (multiplayerToggle) {
@@ -54,14 +54,14 @@ function setupHomePage() {
         multiplayerToggle.style.display = "none";
       } else {
         multiplayerToggle.style.display = "flex";
-        
+
         // Set initial checkbox state
         const checkbox = document.getElementById("multiplayer-checkbox");
         if (checkbox) {
           checkbox.checked = gameState.multiplayerEnabled;
-          
+
           // Add event listener for checkbox changes
-          checkbox.addEventListener("change", function() {
+          checkbox.addEventListener("change", function () {
             if (this.checked) {
               gameState.enableMultiplayer();
             } else {
@@ -72,15 +72,15 @@ function setupHomePage() {
       }
     }
   }
-    // Add event listener for home page logout button
+  // Add event listener for home page logout button
   const homeLogoutBtn = document.getElementById("home-logout-btn");
   if (homeLogoutBtn) {
-    homeLogoutBtn.addEventListener("click", function() {
+    homeLogoutBtn.addEventListener("click", function () {
       try {
         // Call logout function from auth.js
         if (typeof logoutUser === 'function') {
           logoutUser();
-          
+
           // Go back to login page
           document.getElementById("home-page").style.display = "none";
           document.getElementById("login-page").style.display = "flex";
@@ -96,13 +96,13 @@ function setupHomePage() {
 function initializeHomepage() {
   try {
     console.log("Initializing homepage...");
-    
+
     const homeStartButton = document.getElementById("home-start-btn");
     console.log("Home start button found:", homeStartButton ? "Yes" : "No");
-    
+
     const homePage = document.getElementById("home-page");
     const gameContainer = document.getElementById("game-container");
-    
+
     // Check if elements exist before proceeding
     if (!homeStartButton) {
       console.error("Home start button not found - falling back to alternative lookup");
@@ -118,48 +118,48 @@ function initializeHomepage() {
         throw new Error("Could not find any start game buttons");
       }
     }
-    
+
     if (!homePage) {
       throw new Error("Home page element not found");
     }
-    
+
     if (!gameContainer) {
       throw new Error("Game container element not found");
     }
-    
+
     // Detect device type first thing
     if (typeof detectMobile === 'function') {
       detectMobile();
     } else {
       console.warn("detectMobile function not found, using basic detection");
       window.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    }    console.log("Device detected as:", window.isMobile ? "Mobile" : "Desktop");
-    
+    } console.log("Device detected as:", window.isMobile ? "Mobile" : "Desktop");
+
     // Define the function to handle game start
     function handleStartGameClick() {
       console.log("Start game button clicked - starting game");
-      
+
       try {
         // Hide homepage and ensure game container is visible
         homePage.style.display = "none";
         gameContainer.style.display = "block";
-      } catch(err) {
+      } catch (err) {
         console.error("Error in start game handler:", err);
       }
     }
-    
+
     // Add click event listener to start button
     homeStartButton.addEventListener("click", handleStartGameClick);
-    
+
     // Define a global handler as fallback
-    window.handleStartGameClick = function() {
+    window.handleStartGameClick = function () {
       console.log("Global start game handler called");
-      
+
       try {
         // Hide homepage and ensure game container is visible
         document.getElementById("home-page").style.display = "none";
         document.getElementById("game-container").style.display = "block";
-        
+
         // Ensure DOM is updated before proceeding
         setTimeout(() => {
           try {
@@ -189,7 +189,7 @@ function initializeHomepage() {
             } else {
               throw new Error("startGame function is not defined");
             }
-            
+
             // Set up the timer to hide controls
             hideControlsAfterDelay();
           } catch (delayedError) {
@@ -197,15 +197,15 @@ function initializeHomepage() {
             showError("Game initialization error: " + delayedError.message);
           }
         }, 100); // Small delay to ensure DOM updates
-        
+
       } catch (error) {
         console.error("Error starting game:", error);
         showError("Game start error: " + error.message);
       }
     }
-    
+
     console.log("Homepage initialized successfully");
-    
+
   } catch (error) {
     console.error("Error in homepage initialization:", error);
     showError("Homepage initialization error: " + error.message);
@@ -223,7 +223,7 @@ function checkUiElements() {
     errorMessage: !!document.getElementById("error-message"),
     pointerLockInfo: !!document.getElementById("pointer-lock-info")
   };
-  
+
   // Add mobile-specific elements if on mobile
   if (window.isMobile) {
     elements.joystickLeft = !!document.getElementById("joystick-left");
@@ -232,26 +232,26 @@ function checkUiElements() {
     elements.mobileButtons = !!document.getElementById("mobile-buttons");
     elements.tiltNotification = !!document.getElementById("tilt-notification");
   }
-  
+
   return elements;
 }
 
 // Set up global error handler
-window.onerror = function(message, source, lineno, colno, error) {
+window.onerror = function (message, source, lineno, colno, error) {
   console.error("Unhandled error:", error, "at", source, "line", lineno);
   showError("Error: " + message);
   return true; // Prevents the default browser error handling
 };
 
 // Start the homepage when the page is loaded
-window.onload = function() {
+window.onload = function () {
   console.log("Window loaded");
-  
+
   try {
     // Check if the DOM is ready
     if (document.readyState === "complete") {
       console.log("DOM is ready, initializing homepage");
-      
+
       // Show login page first (it's always shown by default now)
       const loginPage = document.getElementById("login-page");
       if (loginPage) {
@@ -263,19 +263,20 @@ window.onload = function() {
     } else {
       console.log("DOM not ready, waiting for DOMContentLoaded");
       // Wait for DOM to be fully loaded
-      document.addEventListener("DOMContentLoaded", function() {
+      document.addEventListener("DOMContentLoaded", function () {
         console.log("DOMContentLoaded fired, initializing login flow");
         // Auth.js will handle the initial login flow
       });
     }
-    
+
     // Debug info
     console.log("Browser info:", navigator.userAgent);
     console.log("Screen dimensions:", window.innerWidth, "x", window.innerHeight);
     console.log("Pixel ratio:", window.devicePixelRatio);
-    
+
   } catch (error) {
     console.error("Critical error in window.onload:", error);
     alert("Critical error loading game: " + error.message);
   }
 };
+

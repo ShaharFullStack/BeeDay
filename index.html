@@ -85,9 +85,7 @@
           Playing as: <span id="player-name">Player</span>
         </div>
       </div>
-      <div id="controls-info">
-        Made By &copy; "TheMusician" Shahar Maoz
-      </div>
+      <div id="controls-info">Made By &copy; "TheMusician" Shahar Maoz</div>
       <div id="message-box"></div>
       <div id="pointer-lock-info">Click the screen to enable mouse control</div>
       <div id="tilt-notification">
@@ -142,30 +140,27 @@
     <!-- Load THREE loader & initialization helper -->
 
     <!-- Then load configuration files -->
-    <script src="js/config.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/ui.js"></script>
+    <script src="js/configuration/config.js"></script>
+    <script src="js/configuration/utils.js"></script>
+    <script src="js/configuration/auth.js"></script>
+    <script src="js/configuration/ui.js"></script>
     <!-- Load shared globals file next -->
-    <script src="js/globals.js"></script>
-    <script src="js/gameState.js"></script>
-    <script src="js/playerUnifier.js"></script>
+    <script src="js/globals/globals.js"></script>
+    <script src="js/globals/gameState.js"></script>
 
     <!-- Then load controls which depend on THREE -->
-    <script src="js/controls.js"></script>
+    <script src="js/game/controls.js"></script>
     <!-- Then load entity definitions -->
     <script src="js/entities/bee.js"></script>
     <script src="js/entities/flower.js"></script>
+    <script src="js/entities/flowers.js"></script>
     <script src="js/entities/tree.js"></script>
     <script src="js/entities/hive.js"></script>
-    <script src="js/world.js"></script>
-    <script src="js/game.js"></script>
-    <script src="js/fixButtons.js"></script>
-    <script src="js/playerNameUpdater.js"></script>
-    <script src="js/multiplayerStatus.js"></script>
-    <script src="js/multiplayer.js"></script>
-    <script src="js/guestNameHandler.js"></script>
-    <script src="js/playerInteractions.js"></script>
+    <script src="js/game/world.js"></script>
+    <script src="js/game/game.js"></script>
+    <script src="js/game/fixButtons.js"></script>
+    <script src="js/user/multiplayer.js"></script>
+    <script src="js/user/playerInteractions.js"></script>
 
     <!-- Main should be loaded last -->
     <script src="js/main.js"></script>

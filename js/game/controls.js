@@ -364,9 +364,74 @@ function updateBeeMovement() {
       // Set bee's local direction and apply speed
       moveVelocity.copy(moveDirection).multiplyScalar(currentSpeed);
       
+      // Save current position before movement
+      const prevPosition = bee.position.clone();
+      
       // Apply movement relative to bee's rotation
       bee.translateZ(moveVelocity.z);
       bee.translateX(moveVelocity.x * 0.8); // Slightly slower sideways movement
+      
+      // Check collision with trees after movement
+      if (trees && trees.length > 0) {
+        let collision = false;
+        let collisionTree = null;
+        
+        for (const tree of trees) {
+          if (tree && tree.userData && tree.userData.isTree) {
+            const treePos = tree.position;
+            const treeRadius = tree.userData.radius || 2.0;
+            
+            // Calculate horizontal distance between bee and tree
+            const dx = bee.position.x - treePos.x;
+            const dz = bee.position.z - treePos.z;
+            const distance = Math.sqrt(dx * dx + dz * dz);
+            
+            // Check if bee is colliding with this tree
+            if (distance < treeRadius) {
+              collision = true;
+              collisionTree = tree;
+              break;
+            }
+          }
+        }
+        
+        // If collision detected
+        if (collision && collisionTree) {
+          // Restore previous position with a small bounce back
+          bee.position.copy(prevPosition);
+          
+          // Apply a small bounce back effect
+          const pushDirection = new THREE.Vector3(
+            bee.position.x - collisionTree.position.x,
+            0,
+            bee.position.z - collisionTree.position.z
+          ).normalize();
+          
+          bee.position.x += pushDirection.x * 0.2;
+          bee.position.z += pushDirection.z * 0.2;
+          
+          // Play collision sound (throttled to avoid too many sounds)
+          if (!window.lastTreeCollisionTime || Date.now() - window.lastTreeCollisionTime > 1000) {
+            window.lastTreeCollisionTime = Date.now();
+            
+            if (typeof window.playSound === 'function') {
+              window.playSound('treeCollision');
+            }
+          }
+          
+          // Show feedback message occasionally (not on every frame)
+          if (Math.random() < 0.05) {
+            if (typeof showMessage === 'function') {
+              // Different message based on tree type
+              if (collisionTree.userData.type === 'hiveTree') {
+                showMessage("That's your hive tree! Be careful around it.", 1500);
+              } else {
+                showMessage("Ouch! Careful around the trees!", 1500);
+              }
+            }
+          }
+        }
+      }
     }
 
     // Ensure bee stays within bounds (applies to both mobile and desktop)

@@ -10,7 +10,12 @@ function createTree(x, z, isHiveTree = false) {
     const trunkHeight = 5 + Math.random() * 3;
     
     // Store the trunk height for later use (especially for hive placement)
-    treeGroup.userData.trunkHeight = trunkHeight;
+    treeGroup.userData = {
+      trunkHeight: trunkHeight,
+      isTree: true,
+      radius: 2.0, // Collision radius around the tree trunk
+      type: isHiveTree ? 'hiveTree' : 'tree'
+    };
     
     // Create tree trunk - tapered cylinder
     const trunkGeometry = new THREE.CylinderGeometry(
@@ -103,6 +108,21 @@ function createTree(x, z, isHiveTree = false) {
     // Add to scene and global trees array
     scene.add(treeGroup);
     trees.push(treeGroup);
+    
+    // Visualize collision radius (only in development, comment out for production)
+    if (window.SHOW_COLLISION_DEBUG) {
+      const collisionGeometry = new THREE.RingGeometry(treeGroup.userData.radius - 0.05, treeGroup.userData.radius, 16);
+      const collisionMaterial = new THREE.MeshBasicMaterial({ 
+        color: 0xff0000,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.3
+      });
+      const collisionVisualizer = new THREE.Mesh(collisionGeometry, collisionMaterial);
+      collisionVisualizer.rotation.x = Math.PI / 2; // Lay flat on ground
+      collisionVisualizer.position.y = 0.1; // Slightly above ground
+      treeGroup.add(collisionVisualizer);
+    }
     
     return treeGroup;
   } catch (error) {

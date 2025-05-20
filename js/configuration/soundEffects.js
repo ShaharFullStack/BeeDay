@@ -23,6 +23,11 @@ const soundEffects = {
       src: 'assets/sounds/error.mp3',
       volume: 0.4,
       preload: false
+    },
+    treeCollision: {
+      src: 'assets/sounds/error.mp3', // Reuse the error sound for now
+      volume: 0.3,
+      preload: false
     }
   },
   

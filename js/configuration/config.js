@@ -49,3 +49,7 @@ let isMobile = false; // Will be set in detectMobile()
 
 // Low-poly settings
 const LOW_POLY_SEGMENTS = 4; // Lower number = more faceted/low-poly look
+
+// Debug options
+const SHOW_COLLISION_DEBUG = false; // Set to true to visualize collision areas
+window.SHOW_COLLISION_DEBUG = SHOW_COLLISION_DEBUG;
