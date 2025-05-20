@@ -137,23 +137,22 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
 
-    <!-- Load THREE loader & initialization helper -->
-
-    <!-- Then load configuration files -->
-    <script src="js/configuration/config.js"></script>
+    <!-- Load THREE loader & initialization helper -->    <!-- Then load configuration files -->    <script src="js/configuration/config.js"></script>
     <script src="js/configuration/utils.js"></script>
     <script src="js/configuration/auth.js"></script>
+    <script src="js/configuration/soundEffects.js"></script>
     <script src="js/configuration/ui.js"></script>
-    <!-- Load shared globals file next -->
+    <script src="js/configuration/debugTools.js"></script>    <!-- Load shared globals file next -->
     <script src="js/globals/globals.js"></script>
     <script src="js/globals/gameState.js"></script>
+    <script src="js/globals/exposeGameState.js"></script>
+    <script src="js/globals/syncGameState.js"></script>
 
     <!-- Then load controls which depend on THREE -->
     <script src="js/game/controls.js"></script>
     <!-- Then load entity definitions -->
     <script src="js/entities/bee.js"></script>
     <script src="js/entities/flower.js"></script>
-    <script src="js/entities/flowers.js"></script>
     <script src="js/entities/tree.js"></script>
     <script src="js/entities/hive.js"></script>
     <script src="js/game/world.js"></script>

@@ -16,7 +16,8 @@ const gameState = {
   // Multiplayer-related data
   multiplayerEnabled: false,
   onlinePlayers: [],
-    // Initialize the game state
+
+  // Initialize the game state
   init: function() {
     console.log("Initializing game state...");
     this.loadState();
@@ -88,13 +89,12 @@ const gameState = {
         // Trigger special name change notification if shown in-game
         if (typeof showMessage === 'function' && document.getElementById('game-container')?.style.display !== 'none') {
           showMessage(`Player name updated to: ${authUser.name}`, 3000);
-        }
-      } else {
+        }      } else {
         // Create new currentUser object
         this.currentUser = {
           id: authUser.id,
           name: authUser.name,
-          isGuest: authUser.id.startsWith("guest-")
+          isGuest: authUser.isGuest || authUser.id.startsWith("guest-") || false
         };
       }
       
@@ -191,6 +191,21 @@ const gameState = {
 document.addEventListener("DOMContentLoaded", function() {
   // We'll initialize after a delay to ensure auth.js has loaded the user
   setTimeout(() => {
+    // Make sure gameState is globally accessible
+    if (!window.gameState) {
+      window.gameState = gameState;
+      console.log("Explicitly set window.gameState");
+    }
+    
     gameState.init();
+    
+    // Double check sync with user account after everything is loaded
+    setTimeout(() => {
+      if (window.user && window.user.isLoggedIn && 
+         (!gameState.currentUser || gameState.currentUser.name !== window.user.name)) {
+        console.log("Extra sync between auth user and gameState");
+        gameState.syncWithUserAccount();
+      }
+    }, 500);
   }, 1000);
 });

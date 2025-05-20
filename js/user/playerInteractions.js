@@ -69,7 +69,7 @@ const guestNameHandler = {
   
   // Load a previously saved guest name (if any)
   loadSavedGuestName: function() {
-    if (window.user && window.user.isGuest) {
+    if (window.user.guest && window.user.isGuest) {
       const savedName = localStorage.getItem('beeGame_guestName');
       if (savedName) {
         window.user.name = savedName;
@@ -90,6 +90,11 @@ const guestNameHandler = {
 
 // Initialize when the home page is shown
 document.addEventListener("DOMContentLoaded", function() {
+  // Debug check for gameState
+  console.log("DOMContentLoaded in playerInteractions.js - gameState check:", 
+    window.gameState ? "defined" : "undefined", 
+    window.gameState?.currentUser ? "with user" : "no user");
+  
   // Wait for home page to become visible
   const observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
@@ -300,8 +305,7 @@ function updatePlayerName() {
 // Create the unifier object
 const playerUnifier = {
   // Cache last known player name to detect changes
-  _lastPlayerName: null,
-    // Get the player's name consistently from any available source
+  _lastPlayerName: null,  // Get the player's name consistently from any available source
   getPlayerName: function() {
     // Priority chain for name sources
     let playerName = null;
@@ -316,10 +320,19 @@ const playerUnifier = {
       console.log("Using player name from auth user:", playerName);
       
       // Sync auth user name to gameState if needed
-      if (window.gameState && window.gameState.currentUser && 
-          window.gameState.currentUser.name !== playerName) {
-        console.log("Syncing auth user name to gameState");
-        window.gameState.currentUser.name = playerName;
+      if (window.gameState) {
+        if (!window.gameState.currentUser) {
+          console.log("Creating gameState.currentUser from auth user");
+          window.gameState.currentUser = {
+            id: window.user.id,
+            name: window.user.name,
+            isGuest: window.user.isGuest || window.user.id?.startsWith("guest-") || false
+          };
+        } else if (window.gameState.currentUser.name !== playerName) {
+          console.log("Syncing auth user name to gameState");
+          window.gameState.currentUser.name = playerName;
+          window.gameState.currentUser.isGuest = window.user.isGuest || window.user.id?.startsWith("guest-") || false;
+        }
       }
     }
     // 2. Then try gameState as fallback
@@ -389,7 +402,6 @@ const playerUnifier = {
     
     // Create backward-compatible global functions
     window.updateAllPlayerNames = this.updateAllNames.bind(this);
-    window.updatePlayerNames = this.updateAllNames.bind(this);
     window.updatePlayerName = this.updateAllNames.bind(this);
     window.getPlayerName = this.getPlayerName.bind(this);
     
@@ -491,10 +503,18 @@ playerUnifier.forceRefreshFromAuth = function() {
     console.log("Auth user found:", window.user.name);
     
     // Make sure gameState is updated
-    if (window.gameState && window.gameState.currentUser) {
-      if (window.gameState.currentUser.name !== window.user.name) {
+    if (window.gameState) {
+      if (!window.gameState.currentUser) {
+        console.log("Creating gameState.currentUser from auth during forced refresh");
+        window.gameState.currentUser = {
+          id: window.user.id,
+          name: window.user.name,
+          isGuest: window.user.isGuest || window.user.id?.startsWith("guest-") || false
+        };
+      } else if (window.gameState.currentUser.name !== window.user.name) {
         console.log(`Updating gameState user from "${window.gameState.currentUser.name}" to "${window.user.name}"`);
         window.gameState.currentUser.name = window.user.name;
+        window.gameState.currentUser.isGuest = window.user.isGuest || window.user.id?.startsWith("guest-") || false;
       }
     }
     

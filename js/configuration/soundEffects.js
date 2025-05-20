@@ -4,9 +4,14 @@
 const soundEffects = {
   // Collection of sound effects
   sounds: {
-    honeyCollect: {
-      src: 'assets/sounds/honey-collect.mp3',
+    collect: {
+      src: 'assets/sounds/collect.mp3',
       volume: 0.5,
+      preload: true
+    },
+    deposit: {
+      src: 'assets/sounds/deposit.mp3',
+      volume: 0.8,
       preload: true
     },
     playerNearby: {
@@ -25,7 +30,7 @@ const soundEffects = {
       preload: false
     },
     treeCollision: {
-      src: 'assets/sounds/error.mp3', // Reuse the error sound for now
+      src: 'assets/sounds/treeCollision.mp3', // Reuse the error sound for now
       volume: 0.3,
       preload: false
     }
@@ -37,14 +42,13 @@ const soundEffects = {
   // Master volume control
   masterVolume: 0.5,
   muted: false,
-  
-  // Initialize sound system
+    // Initialize sound system
   init: function() {
     console.log("Initializing sound system...");
     
     // Create audio context if supported
-    if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
-      this.audioContext = new (AudioContext || webkitAudioContext)();
+    if (typeof window.AudioContext !== 'undefined' || typeof window.webkitAudioContext !== 'undefined') {
+      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
     }
     
     // Preload sounds marked for preloading
@@ -93,11 +97,16 @@ const soundEffects = {
       return null;
     }
   },
-  
-  // Play a sound by name
+    // Play a sound by name
   playSound: function(name) {
     // Skip if muted
     if (this.muted) return;
+    
+    // Check if sound exists in the library
+    if (!this.sounds[name]) {
+      console.warn(`Sound "${name}" not found in library`);
+      return;
+    }
     
     let audio = this.audioCache.get(name);
     

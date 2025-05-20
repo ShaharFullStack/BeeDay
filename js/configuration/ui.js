@@ -104,6 +104,7 @@ function handleAction() {
           flower.userData.hasNectar = false;
           flower.userData.petalMaterial.color.set(0x888888);
           flower.userData.nectarCenterMesh.scale.set(0.2, 0.2, 0.2);
+          soundEffects.playSound("collect");
           showMessage(
             `Nectar collected! (${nectarCarried}/${NECTAR_CAPACITY})`,
             1500
@@ -127,7 +128,7 @@ function handleAction() {
         if (window.gameState && typeof window.gameState.updateHoney === 'function') {
           window.gameState.updateHoney(deposited);
         }
-        
+        soundEffects.playSound("deposit");
         showMessage(
           `Deposited ${deposited} nectar! Total honey: ${honeyInHive}`,
           2000

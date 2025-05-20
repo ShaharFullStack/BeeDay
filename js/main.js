@@ -29,7 +29,7 @@ function showError(message) {
   if (errorMsg) {
     errorMsg.textContent = message;
     errorMsg.style.display = "block";
-
+    
     // Auto-hide error after 8 seconds
     setTimeout(() => {
       errorMsg.style.display = "none";
@@ -43,29 +43,27 @@ function setupHomePage() {
   if (window.gameState && window.gameState.currentUser) {
     const playerNameElement = document.getElementById("home-player-name");
     if (playerNameElement) {
-      playerNameElement.textContent = gameState.currentUser.name;
+      playerNameElement.textContent = window.gameState.currentUser.name;
     }
 
     // Show/hide multiplayer toggle based on user type
     const multiplayerToggle = document.getElementById("multiplayer-toggle");
     if (multiplayerToggle) {
       // Only show multiplayer option for non-guest users
-      if (gameState.currentUser.isGuest) {
+      if (window.gameState.currentUser.isGuest) {
         multiplayerToggle.style.display = "none";
       } else {
-        multiplayerToggle.style.display = "flex";
-
-        // Set initial checkbox state
+        multiplayerToggle.style.display = "flex";        // Set initial checkbox state
         const checkbox = document.getElementById("multiplayer-checkbox");
         if (checkbox) {
-          checkbox.checked = gameState.multiplayerEnabled;
+          checkbox.checked = window.gameState.multiplayerEnabled;
 
           // Add event listener for checkbox changes
           checkbox.addEventListener("change", function () {
             if (this.checked) {
-              gameState.enableMultiplayer();
+              window.gameState.enableMultiplayer();
             } else {
-              gameState.disableMultiplayer();
+              window.gameState.disableMultiplayer();
             }
           });
         }
