@@ -49,59 +49,36 @@ function showMessage(text, duration = 2000) {
   }
 }
 
-// Apply styles based on device type
+// Apply styles based on device type — now CSS-driven, this just sets body class + hides UI noise
 function applyDeviceSpecificStyles() {
   try {
-    // The CSS media queries handle most styling, but we might need to adjust some elements dynamically
     if (isMobile) {
-      const desktopControls = document.querySelector(".desktop-controls");
-      const mobileControls = document.querySelector(".mobile-controls");
-      const joystickLeft = document.getElementById("joystick-left");
-      const joystickRight = document.getElementById("joystick-right");
-      const mobileButtons = document.getElementById("mobile-buttons");
-      const mobileHeightControls = document.getElementById("mobile-height-controls");
-      const pointerLockInfo = document.getElementById("pointer-lock-info");
-      const tiltNotification = document.getElementById("tilt-notification");
-      
-      if (desktopControls) desktopControls.style.display = "none";
-      if (mobileControls) mobileControls.style.display = "block";
-      if (joystickLeft) joystickLeft.style.display = "block";
-      if (joystickRight) joystickRight.style.display = "block";
-      if (mobileButtons) mobileButtons.style.display = "block";
-      if (mobileHeightControls) mobileHeightControls.style.display = "block";
-      if (pointerLockInfo) pointerLockInfo.style.display = "none";
-      if (tiltNotification) tiltNotification.style.display = "block";
-      
-      // Force-disable any CSS media queries that might hide mobile controls
-      document.body.classList.add("mobile-device");
-      
-      // Log to console that mobile controls are enabled
-      console.log("Mobile controls enabled");
+      document.body.classList.add('mobile-device');
+
+      // Hide desktop-only elements
+      const pli = document.getElementById('pointer-lock-info');
+      if (pli) pli.style.display = 'none';
+
+      // Lower pixel ratio on mobile for performance (max 1.5x)
+      if (renderer) {
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+        renderer.setPixelRatio(dpr);
+      }
+
+      // Reduce fog distance on mobile to cut fill-rate
+      if (scene && scene.fog) {
+        scene.fog.near = 60;
+        scene.fog.far  = 200;
+      }
+
+      console.log('Mobile styles applied');
     } else {
-      const desktopControls = document.querySelector(".desktop-controls");
-      const mobileControls = document.querySelector(".mobile-controls");
-      const joystickLeft = document.getElementById("joystick-left");
-      const joystickRight = document.getElementById("joystick-right");
-      const mobileButtons = document.getElementById("mobile-buttons");
-      const mobileHeightControls = document.getElementById("mobile-height-controls");
-      const tiltNotification = document.getElementById("tilt-notification");
-      
-      if (desktopControls) desktopControls.style.display = "block";
-      if (mobileControls) mobileControls.style.display = "none";
-      if (joystickLeft) joystickLeft.style.display = "none";
-      if (joystickRight) joystickRight.style.display = "none";
-      if (mobileButtons) mobileButtons.style.display = "none";
-      if (mobileHeightControls) mobileHeightControls.style.display = "none";
-      if (tiltNotification) tiltNotification.style.display = "none";
-      
-      // Ensure desktop mode is enabled
-      document.body.classList.remove("mobile-device");
-      
-      // Log to console that desktop controls are enabled
-      console.log("Desktop controls enabled");
+      document.body.classList.remove('mobile-device');
+      if (renderer) renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      console.log('Desktop styles applied');
     }
   } catch (error) {
-    console.error("Error applying device-specific styles:", error);
+    console.error('Error applying device-specific styles:', error);
   }
 }
 

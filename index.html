@@ -2,17 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-    <title>Bee Day! 🐝 — Honey Hunt Strategy</title>
-    <meta name="description" content="Bee Day! is a 3D bee strategy game. Choose your bee role, collect honey, defend your hive from hornets and bears, and advance through 5 challenging levels!" />
+    <!-- Mobile-first viewport — no zoom, fills entire screen -->
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0,
+                   minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#0d0d0d" />
+    <title>Bee Day! 🐝 — Honey Hunt</title>
+    <meta name="description" content="Bee Day! is a 3D mobile bee strategy game. Choose your role, collect honey, defend the hive from hornets and bears across 5 challenging levels!" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23FFD700'/%3E%3Cellipse cx='50' cy='50' rx='25' ry='18' fill='%23000000'/%3E%3Cellipse cx='50' cy='50' rx='22' ry='15' fill='%23FFD700'/%3E%3Crect x='30' y='40' width='40' height='5' fill='%23000000'/%3E%3Crect x='28' y='55' width='44' height='5' fill='%23000000'/%3E%3Cellipse cx='35' cy='35' rx='15' ry='8' fill='rgba(173,216,230,0.8)' transform='rotate(-30 35 35)'/%3E%3Cellipse cx='65' cy='35' rx='15' ry='8' fill='rgba(173,216,230,0.8)' transform='rotate(30 65 35)'/%3E%3Ccircle cx='40' cy='45' r='3' fill='%23000000'/%3E%3Ccircle cx='60' cy='45' r='3' fill='%23000000'/%3E%3C/svg%3E" />
-    <!-- CSS -->
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="stylesheet" href="css/multiplayer.css" />
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <!-- Google Sign-In API -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
   <body>
@@ -25,13 +29,16 @@
         <h2>Honey Hunt</h2>
         <div id="login-options">
           <button id="google-login-btn" class="login-btn">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" class="login-icon" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+                 alt="Google" class="login-icon" />
             Sign in with Google
           </button>
-          <button id="guest-login-btn" class="login-btn">Play as Guest</button>
+          <button id="guest-login-btn" class="login-btn btn-secondary">
+            🎮 Play as Guest
+          </button>
         </div>
-        <div id="user-profile" style="display: none">
-          <img id="user-avatar" src="" alt="User Avatar" />
+        <div id="user-profile" style="display:none">
+          <img id="user-avatar" src="" alt="Avatar" />
           <div id="user-name"></div>
           <button id="login-start-btn" class="start-game-btn">Bzzz...🐝</button>
           <button id="logout-btn" class="small-btn">Sign Out</button>
@@ -40,161 +47,168 @@
     </div>
 
     <!-- ==================== HOME PAGE ==================== -->
-    <div id="home-page" style="display: none">
-      <div class="title-container">
-        <div class="bee-logo">🐝</div>
-        <h1>Bee Day!</h1>
-        <h2>Honey Hunt</h2>
-        <div id="player-welcome">
-          Welcome, <span id="home-player-name">Player</span>!
+    <div id="home-page" style="display:none">
+      <div class="title-container home-container">
+        <div class="home-header">
+          <div class="bee-logo-sm">🐝</div>
+          <div>
+            <h1>Bee Day!</h1>
+            <div id="player-welcome">Welcome, <span id="home-player-name">Player</span>!</div>
+          </div>
         </div>
 
         <!-- Role Selection -->
         <div id="role-selection">
-          <h3 class="role-title">Choose Your Bee Role</h3>
+          <div class="section-label">Choose Your Bee Role</div>
           <div id="role-cards">
-            <div class="role-card selected" data-role="worker" id="role-worker">
+            <div class="role-card selected" data-role="worker">
               <div class="role-icon">🐝</div>
               <div class="role-name">Worker</div>
-              <div class="role-desc">Balanced. Normal speed & capacity.</div>
+              <div class="role-desc">Balanced all-rounder</div>
             </div>
-            <div class="role-card" data-role="scout" id="role-scout">
+            <div class="role-card" data-role="scout">
               <div class="role-icon">🔍</div>
               <div class="role-name">Scout</div>
-              <div class="role-desc">+50% speed. Sees more on minimap.</div>
+              <div class="role-desc">+50% speed · Better minimap</div>
             </div>
-            <div class="role-card" data-role="guard" id="role-guard">
+            <div class="role-card" data-role="guard">
               <div class="role-icon">⚔️</div>
               <div class="role-name">Guard</div>
-              <div class="role-desc">Press E to sting enemies. Fighter.</div>
+              <div class="role-desc">Press STING to fight enemies</div>
             </div>
-            <div class="role-card" data-role="queen" id="role-queen">
+            <div class="role-card" data-role="queen">
               <div class="role-icon">👑</div>
               <div class="role-name">Queen</div>
-              <div class="role-desc">Passive +1 honey every 8 seconds.</div>
+              <div class="role-desc">Passive +1 honey / 8 sec</div>
             </div>
           </div>
         </div>
 
-        <!-- Controls help -->
-        <div id="home-controls-hint">
-          <span>WASD / Move</span>
-          <span>Shift / Sprint</span>
-          <span>Space / Collect</span>
-          <span>E / Sting (Guard)</span>
-          <span>Scroll / Height</span>
+        <!-- Controls hint (mobile/desktop aware) -->
+        <div id="mobile-hint" class="controls-hint mobile-only">
+          <span>LEFT side → Look</span>
+          <span>RIGHT side → Move</span>
+          <span>⬆️⬇️ → Height</span>
+          <span>🍯 → Collect</span>
+        </div>
+        <div id="desktop-hint" class="controls-hint desktop-only">
+          <span>WASD Move</span><span>Mouse Look</span>
+          <span>Shift Sprint</span><span>Space Collect</span><span>E Sting</span>
         </div>
 
         <div id="multiplayer-toggle">
-          <label for="multiplayer-checkbox">Enable Multiplayer</label>
+          <label for="multiplayer-checkbox">Multiplayer</label>
           <input type="checkbox" id="multiplayer-checkbox" />
         </div>
 
-        <div id="guest-name-container" style="display: none">
+        <div id="guest-name-container" style="display:none">
           <input type="text" id="guest-name-input" maxlength="15" placeholder="Enter your bee name" />
-          <button id="guest-name-save">Save Name</button>
+          <button id="guest-name-save">✓</button>
         </div>
 
-        <button id="home-start-btn" class="start-game-btn">🐝 Bzzz... Let's Go!</button>
+        <button id="home-start-btn" class="start-game-btn">🐝 Fly!</button>
         <button id="home-logout-btn" class="small-btn">Sign Out</button>
       </div>
     </div>
 
     <!-- ==================== GAME CONTAINER ==================== -->
-    <div id="game-container" style="display: none">
+    <div id="game-container" style="display:none">
 
-      <!-- ===== HUD TOP-LEFT: Bee vitals ===== -->
+      <!-- ══ TOP-LEFT: Bee vitals ══════════════════════════════════ -->
       <div id="hud-vitals">
         <div class="hud-bar-row">
           <span class="hud-icon">💚</span>
-          <div class="hud-bar-track">
-            <div class="hud-bar-fill" id="hud-hp-fill" style="width:100%"></div>
-          </div>
-          <span class="hud-val" id="hud-hp-text">100/100</span>
+          <div class="hud-bar-track"><div class="hud-bar-fill" id="hud-hp-fill"></div></div>
+          <span class="hud-val" id="hud-hp-text">100</span>
         </div>
         <div class="hud-bar-row">
           <span class="hud-icon">⚡</span>
-          <div class="hud-bar-track">
-            <div class="hud-bar-fill stam" id="hud-stamina-fill" style="width:100%"></div>
-          </div>
+          <div class="hud-bar-track"><div class="hud-bar-fill stam" id="hud-stamina-fill"></div></div>
           <span class="hud-val" id="hud-stamina-text">100</span>
         </div>
         <div class="hud-bar-row">
           <span class="hud-icon">🏠</span>
-          <div class="hud-bar-track">
-            <div class="hud-bar-fill hive" id="hud-hivehp-fill" style="width:100%"></div>
-          </div>
-          <span class="hud-val" id="hud-hivehp-text">200/200</span>
+          <div class="hud-bar-track"><div class="hud-bar-fill hive" id="hud-hivehp-fill"></div></div>
+          <span class="hud-val" id="hud-hivehp-text">200</span>
         </div>
       </div>
 
-      <!-- ===== HUD TOP-CENTER: Level + timer ===== -->
+      <!-- ══ TOP-CENTER: Level + timer ════════════════════════════ -->
       <div id="hud-top-center">
         <div id="hud-level">Level 1</div>
-        <div id="hud-level-name">Springtime Meadow</div>
         <div id="hud-timer">2:00</div>
       </div>
 
-      <!-- ===== HUD TOP-RIGHT: Honey progress ===== -->
+      <!-- ══ TOP-RIGHT: Honey progress ════════════════════════════ -->
       <div id="hud-honey-panel">
         <div class="hud-honey-row">
           <span id="hud-honey-text">0</span>
-          <span id="hud-honey-goal">/20 🍯</span>
+          <span id="hud-honey-goal">/20🍯</span>
         </div>
-        <div class="hud-bar-track wide">
-          <div class="hud-bar-fill honey" id="hud-honey-fill" style="width:0%"></div>
-        </div>
-        <div id="hud-role-badge">🐝 Worker Bee</div>
+        <div class="hud-bar-track"><div class="hud-bar-fill honey" id="hud-honey-fill"></div></div>
+        <div id="hud-role-badge">🐝 Worker</div>
       </div>
 
-      <!-- ===== HUD BOTTOM-LEFT: Nectar carried ===== -->
+      <!-- ══ BOTTOM-LEFT: Nectar counter ══════════════════════════ -->
       <div id="ui-container">
-        <div>Nectar: <span id="nectar-carried">0</span>/<span id="nectar-capacity">10</span></div>
-        <div>Honey in Hive: <span id="honey-in-hive">0</span></div>
-        <div id="player-status">Playing as: <span id="player-name">Player</span></div>
+        <div>🌸 <span id="nectar-carried">0</span>/<span id="nectar-capacity">10</span></div>
+        <div>🍯 <span id="honey-in-hive">0</span></div>
+        <div id="player-status"><span id="player-name">Player</span></div>
       </div>
 
-      <!-- ===== HUD BOTTOM-RIGHT: Minimap ===== -->
-      <canvas id="hud-minimap" width="130" height="130"></canvas>
+      <!-- ══ BOTTOM-RIGHT: Minimap ═════════════════════════════════ -->
+      <canvas id="hud-minimap" width="110" height="110"></canvas>
 
-      <!-- Misc overlays -->
-      <div id="controls-info">Made By &copy; "TheMusician" Shahar Maoz | W/A/S/D Move · Shift Sprint · Space Collect · E Sting</div>
+      <!-- ══ MISC overlays ═════════════════════════════════════════ -->
       <div id="message-box"></div>
-      <div id="pointer-lock-info">Click the screen to enable mouse control</div>
-      <div id="tilt-notification">Please tilt your device to start playing!</div>
+      <div id="pointer-lock-info">Click to enable mouse control</div>
+      <div id="tilt-notification">Tilt your device to start!</div>
+      <div id="controls-info">Made By © "TheMusician" Shahar Maoz</div>
+      <div id="error-message"></div>
 
-      <!-- Level transition overlay -->
+      <!-- ══ LEVEL OVERLAY ══════════════════════════════════════════ -->
       <div id="level-overlay" style="display:none"></div>
 
-      <!-- Mobile Controls -->
-      <div id="joystick-left"><div class="joystick-knob"></div></div>
-      <div id="joystick-right"><div class="joystick-knob"></div></div>
-      <div id="mobile-height-controls">
-        <div id="height-up">⬆️</div>
-        <div id="height-down">⬇️</div>
+      <!-- ══════════════════════════════════════════════════
+           MOBILE CONTROLS — floating joystick bases (hidden until touched)
+           Position is set dynamically by JS at touch start.
+           ══════════════════════════════════════════════════ -->
+      <div id="joystick-left"  style="display:none">
+        <div class="joystick-knob"></div>
       </div>
-      <div id="mobile-buttons">
-        <div id="action-button">COLLECT / DEPOSIT</div>
-        <div id="sting-button">⚔️ STING</div>
+      <div id="joystick-right" style="display:none">
+        <div class="joystick-knob"></div>
       </div>
 
-      <div id="error-message"></div>
-    </div>
+      <!-- Height controls — right side, middle-ish -->
+      <div id="mobile-height-controls">
+        <div id="height-up"   class="height-btn">▲</div>
+        <div id="height-down" class="height-btn">▼</div>
+      </div>
+
+      <!-- Action buttons — bottom center -->
+      <div id="mobile-buttons">
+        <button id="action-button">🍯<br><span>COLLECT</span></button>
+        <button id="sting-button">⚔️<br><span>STING</span></button>
+      </div>
+
+    </div><!-- /game-container -->
 
     <!-- ==================== SCRIPTS ==================== -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-      console.log("THREE load check:", typeof THREE);
-      if (typeof THREE === "undefined") {
-        var backupScript = document.createElement("script");
-        backupScript.src = "https://threejs.org/build/three.min.js";
-        backupScript.onerror = function () {
-          document.getElementById("error-message").textContent = "Failed to load 3D library. Please check your internet connection and refresh.";
-          document.getElementById("error-message").style.display = "block";
+      if (typeof THREE === 'undefined') {
+        var bs = document.createElement('script');
+        bs.src = 'https://threejs.org/build/three.min.js';
+        bs.onerror = function() {
+          document.getElementById('error-message').textContent =
+            'Failed to load 3D library. Please refresh.';
+          document.getElementById('error-message').style.display = 'block';
         };
-        document.head.appendChild(backupScript);
+        document.head.appendChild(bs);
       }
     </script>
+    <!-- NOTE: Hammer.js kept for legacy but no longer used for game controls -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
 
     <!-- Config & utils -->
@@ -241,28 +255,38 @@
     <!-- Main (last) -->
     <script src="js/main.js"></script>
 
-    <!-- Role selection logic -->
+    <!-- Role selection + mobile init -->
     <script>
       document.addEventListener('DOMContentLoaded', function() {
         // Role card selection
-        const roleCards = document.querySelectorAll('.role-card');
-        roleCards.forEach(card => {
+        document.querySelectorAll('.role-card').forEach(card => {
           card.addEventListener('click', function() {
-            roleCards.forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
             this.classList.add('selected');
             beeRole = this.dataset.role;
             if (typeof levelManager !== 'undefined') levelManager.recalcStats();
           });
+          // Also support touch
+          card.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            this.click();
+          }, { passive: false });
         });
 
-        // Mobile sting button
-        const stingBtn = document.getElementById('sting-button');
-        if (stingBtn) {
-          stingBtn.addEventListener('touchstart', function(e) {
+        // Show/hide mobile vs desktop hints
+        const isMob = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        document.querySelectorAll('.mobile-only').forEach(el => el.style.display = isMob ? 'flex' : 'none');
+        document.querySelectorAll('.desktop-only').forEach(el => el.style.display = isMob ? 'none' : 'flex');
+
+        // Prevent bounce/scroll on iOS
+        document.body.addEventListener('touchmove', function(e) {
+          if (e.target.closest('#game-container') || e.target.id === 'game-container') {
             e.preventDefault();
-            if (typeof enemyManager !== 'undefined') enemyManager.playerSting();
-          });
-        }
+          }
+        }, { passive: false });
+
+        // Context menu kill
+        window.addEventListener('contextmenu', e => e.preventDefault());
       });
     </script>
   </body>

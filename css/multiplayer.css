@@ -3,34 +3,32 @@
 /* Player counter and status indicators */
 .multiplayer-indicator {
   position: absolute;
-  padding: 8px 12px;
-  background-color: rgba(0, 0, 0, 0.75);
-  border-radius: 20px;
+  padding: 6px 10px;
+  background-color: var(--glass, rgba(10, 8, 0, 0.82));
+  border-radius: var(--radius-lg, 18px);
+  border: 1px solid var(--glass-border, rgba(255, 215, 0, 0.22));
   color: white;
   font-size: 14px;
   z-index: 100;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(3px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  backdrop-filter: var(--blur, blur(12px));
   transition: all 0.3s ease;
+  pointer-events: none; /* Let clicks pass through */
 }
 
-.multiplayer-indicator:hover {
-  background-color: rgba(0, 0, 0, 0.85);
-}
-
+/* Position counter below the top-right honey panel */
 #player-counter {
-  top: 20px;
-  right: 20px;
+  top: calc(var(--safe-top, 0px) + 75px);
+  right: calc(var(--safe-right, 0px) + 8px);
   display: flex;
   align-items: center;
-  border-left: 3px solid #FFD700;
 }
 
 #player-counter-icon {
-  width: 20px;
-  height: 20px;
-  margin-right: 8px;
-  background-color: #FFD700;
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+  background-color: var(--gold, #FFD700);
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
@@ -42,29 +40,29 @@
 #player-counter-icon::after {
   content: '👤';
   position: absolute;
-  font-size: 13px;
+  font-size: 11px;
 }
 
 #player-counter-number {
-  font-weight: bold;
-  margin-right: 6px;
-  color: #FFD700;
-  font-size: 16px;
+  font-weight: 700;
+  color: var(--gold, #FFD700);
+  font-size: 14px;
   transition: transform 0.2s ease-out;
 }
 
+/* Position status below the counter */
 #multiplayer-status {
-  top: 60px;
-  right: 20px;
+  top: calc(var(--safe-top, 0px) + 115px);
+  right: calc(var(--safe-right, 0px) + 8px);
   display: flex;
   align-items: center;
+  padding: 4px 8px;
 }
 
 .status-indicator {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  margin-right: 8px;
   display: inline-block;
 }
 
@@ -74,15 +72,15 @@
 }
 
 .status-connected .status-indicator {
-  background-color: #00FF00;
+  background-color: var(--green, #00b894);
 }
 
 .status-disconnected .status-indicator {
-  background-color: #888888;
+  background-color: var(--muted, #888888);
 }
 
 .status-failed .status-indicator {
-  background-color: #FF0000;
+  background-color: var(--red, #d63031);
 }
 
 @keyframes blink {
@@ -97,61 +95,71 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: var(--glass, rgba(10, 8, 0, 0.9));
+  backdrop-filter: var(--blur, blur(12px));
   color: white;
   padding: 20px;
-  border-radius: 10px;
+  border-radius: var(--radius-lg, 18px);
   text-align: center;
-  max-width: 80%;
+  max-width: 90vw;
+  width: 320px;
   z-index: 1000;
-  border: 2px solid #FF6347;
+  border: 1px solid var(--red, #d63031);
 }
 
 .fallback-message p {
   margin-bottom: 15px;
-  font-size: 16px;
+  font-size: 0.95rem;
 }
 
 .fallback-message button {
-  background-color: #4CAF50;
+  background-color: var(--green, #00b894);
   color: white;
   border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
+  padding: 12px 20px;
+  border-radius: 50px;
   cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s;
+  font-family: var(--font, 'Outfit', sans-serif);
+  font-size: 1rem;
+  font-weight: 700;
+  transition: transform 0.2s;
+  min-height: var(--touch-min, 48px);
+  width: 100%;
 }
 
-.fallback-message button:hover {
-  background-color: #45a049;
+.fallback-message button:active {
+  transform: scale(0.96);
 }
 
 /* Honey collection notification */
 .honey-notification {
   position: absolute;
-  right: 20px;
-  background-color: rgba(0, 0, 0, 0.7);
+  right: calc(var(--safe-right, 0px) + 8px);
+  /* Positioned above the lower-right UI to avoid overlaps */
+  bottom: calc(var(--safe-bottom, 0px) + 260px);
+  background-color: var(--glass, rgba(10, 8, 0, 0.8));
+  backdrop-filter: var(--blur, blur(12px));
+  border: 1px solid var(--glass-border, rgba(255, 215, 0, 0.22));
   color: white;
-  padding: 10px 15px;
-  border-radius: 8px;
-  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: var(--radius, 10px);
+  font-size: 0.8rem;
   z-index: 100;
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-              opacity 0.3s ease;
-  border-left: 4px solid #FFD700;
-  max-width: 250px;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+  border-left: 3px solid var(--gold, #FFD700);
+  max-width: 200px;
   transform: translateX(300px);
   opacity: 0;
   display: flex;
   align-items: center;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
 }
 
 .honey-notification::before {
   content: "🍯";
-  font-size: 18px;
-  margin-right: 8px;
+  font-size: 16px;
+  margin-right: 6px;
   animation: bounce 0.6s ease infinite alternate;
 }
 
@@ -166,12 +174,12 @@
 }
 
 .honey-notification .player-name {
-  color: #FFD700;
+  color: var(--amber, #fdcb6e);
   font-weight: bold;
 }
 
 .honey-notification .honey-amount {
-  color: #FFA500;
+  color: var(--gold, #FFD700);
   font-weight: bold;
 }
 
@@ -181,87 +189,115 @@
 }
 
 /* Leaderboard styling */
+/* Positioned below the vitals HUD on the left */
 #leaderboard {
   position: absolute;
-  left: 20px;
-  top: 20px;
-  background-color: rgba(0, 0, 0, 0.6);
+  left: calc(var(--safe-left, 0px) + 8px);
+  top: calc(var(--safe-top, 0px) + 115px);
+  background-color: var(--glass, rgba(10, 8, 0, 0.7));
+  backdrop-filter: var(--blur, blur(12px));
+  border: 1px solid var(--glass-border, rgba(255, 215, 0, 0.22));
   color: white;
-  border-radius: 12px;
-  padding: 10px;
-  width: 240px;
-  z-index: 100;
+  border-radius: var(--radius, 10px);
+  padding: 8px 10px;
+  width: 160px; /* More compact for mobile */
+  font-size: 0.75rem; /* Smaller font */
+  z-index: 45; /* Below the main HUD (z-index 50) */
+  pointer-events: none;
 }
 
 #leaderboard h3 {
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
   text-align: center;
-  font-size: 16px;
-  border-bottom: 1px solid rgba(255, 215, 0, 0.5);
-  padding-bottom: 6px;
+  font-size: 0.8rem;
+  border-bottom: 1px solid var(--glass-border, rgba(255, 215, 0, 0.22));
+  padding-bottom: 4px;
+  text-transform: uppercase;
+  color: var(--amber, #fdcb6e);
+  letter-spacing: 1px;
 }
 
 .leaderboard-entry {
   display: flex;
   justify-content: space-between;
-  padding: 6px 10px;
+  padding: 4px 6px;
   margin: 2px 0;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
 .leaderboard-entry.current-player {
-  background-color: rgba(255, 215, 0, 0.3);
+  background-color: rgba(255, 215, 0, 0.15);
+  border: 1px solid rgba(255, 215, 0, 0.3);
 }
 
 .leaderboard-entry .rank {
-  width: 20px;
-  font-weight: bold;
+  width: 16px;
+  font-weight: 700;
+  color: var(--muted, #999);
 }
 
 .leaderboard-entry .name {
   flex-grow: 1;
   text-align: left;
-  margin-left: 10px;
+  margin-left: 6px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 150px;
+  max-width: 90px;
 }
 
 .leaderboard-entry .score {
-  font-weight: bold;
-  color: #FFD700;
+  font-weight: 700;
+  color: var(--gold, #FFD700);
 }
 
 /* Name customization for guest users */
+/* This is inside the #home-page now, so just general resets are fine */
 #guest-name-container {
-  margin-top: 20px;
+  /* Inherits flex layout from index.html/styles.css; ensure it aligns nicely */
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 100%;
+  gap: 8px;
 }
 
 #guest-name-input {
-  padding: 8px 12px;
-  border-radius: 20px;
-  border: 2px solid #FFD700;
-  background-color: rgba(255, 255, 255, 0.8);
-  font-size: 16px;
-  margin-bottom: 10px;
-  width: 200px;
-  text-align: center;
+  flex: 1;
 }
 
 #guest-name-save {
-  padding: 6px 14px;
-  background-color: #FFD700;
-  border: none;
-  border-radius: 20px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  flex-shrink: 0;
 }
 
-#guest-name-save:hover {
-  background-color: #FFC000;
+/* Breakpoints for multiplayer UI */
+@media (max-width: 600px) {
+  /* Hide leaderboard on very small screens to avoid clutter during gameplay,
+     or make it very tiny. Let's make it super compact. */
+  #leaderboard {
+    width: 130px;
+    font-size: 0.65rem;
+    padding: 6px;
+    top: calc(var(--safe-top, 0px) + 95px); /* Move up slightly as vitals are more compact */
+  }
+  .leaderboard-entry { padding: 2px 4px; }
+
+  /* Adjust notification position */
+  .honey-notification {
+    bottom: calc(var(--safe-bottom, 0px) + 210px);
+    font-size: 0.75rem;
+    padding: 6px 10px;
+  }
 }
+
+@media (min-width: 961px) {
+  #leaderboard {
+    width: 220px;
+    font-size: 0.85rem;
+    top: 140px; /* Safe space below desktop vitals */
+  }
+  #leaderboard h3 { font-size: 0.95rem; }
+  .leaderboard-entry .name { max-width: 140px; }
+  
+  #player-counter { top: 70px; }
+  #multiplayer-status { top: 110px; }
+}
+
