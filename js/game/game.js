@@ -3,58 +3,64 @@
 // Initialize the game
 function init() {
   try {
-    // Check if THREE is available through our threeLoader
     if (typeof THREE === 'undefined') {
-      console.error("THREE is not defined in init()! Make sure Three.js is loaded correctly.");
+      console.error("THREE is not defined in init()!");
       return;
     }
 
     console.log("Initializing game with THREE:", typeof THREE);
 
-    // Set up THREE.js scene, camera, and renderer
     scene = new THREE.Scene();
     scene.background = new THREE.Color(SKY_COLOR);
-    scene.fog = new THREE.Fog(SKY_COLOR, 100, 400); // Adjusted fog for larger world
+    scene.fog = new THREE.Fog(SKY_COLOR, 100, 400);
 
-    camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
     document.body.appendChild(renderer.domElement);
 
-    // Set up the world, entities, and mechanics
     setupWorld();
     bee = createBee();
     createInitialTreesAndHive();
-    
-    // Expose scene and bee to window for multiplayer access
+
     window.scene = scene;
     window.bee = bee;
 
-    // Initial flower population
-    updateBeeCellAndManageFlowers(true); // Force initial population
+    // Spawn queen bee
+    if (typeof createQueenBee === 'function') createQueenBee();
 
-    // Set up event handlers
+    // Flower population
+    updateBeeCellAndManageFlowers(true);
+
+    // Event listeners
     setupEventListeners();
     updateUI();
 
-    // Make sure controls are visible at start
-    const controlsInfo = document.getElementById("controls-info");
-    controlsInfo.style.opacity = "1";
-    controlsInfo.style.display = "block";
+    // Init new HUD
+    if (typeof gameHUD !== 'undefined') gameHUD.init();
 
-    // Apply device-specific styles
-    applyDeviceSpecificStyles();    // Show tilt notification on mobile
+    // Apply role stats using selected role from home page
+    if (typeof levelManager !== 'undefined') levelManager.recalcStats();
+
+    const controlsInfo = document.getElementById("controls-info");
+    if (controlsInfo) {
+      controlsInfo.style.opacity = "1";
+      controlsInfo.style.display = "block";
+    }
+
+    applyDeviceSpecificStyles();
     if (isMobile) {
       document.getElementById("tilt-notification").style.display = "block";
       requestDeviceOrientationPermission();
     }
+
+    // Start level 1
+    if (typeof levelManager !== 'undefined') {
+      levelManager.startLevel(1);
+    }
+
   } catch (error) {
     console.error("Error initializing game:", error);
   }
@@ -62,75 +68,66 @@ function init() {
 
 // Create initial trees and the hive
 function createInitialTreesAndHive() {
-    try {
-      // Check if createTree function exists
-      if (typeof createTree !== 'function') {
-        console.error("createTree function is not defined!");
-        return;
-      }
-
-      // Create several trees around the starting area
-      const treeCount = 30;
-      const treeRadius = 45; // Spread trees in a circle of this radius
-
-      // Create the special hive tree first
-      hiveTree = createTree(2, 1, true); // Place the hive tree at a fixed position
-
-      if (!hiveTree) {
-        console.error("Failed to create hive tree!");
-        return;
-      }
-
-      // Create the hive after the hive tree is created
-      if (typeof createHive === 'function') {
-        createHive();
-      } else {
-        console.error("createHive function is not defined!");
-      }
-
-      // Create additional trees around the area
-      for (let i = 0; i < treeCount; i++) {
-        const angle = (i / treeCount) * Math.PI * 2;
-        const x = Math.cos(angle) * treeRadius;
-        const z = Math.sin(angle) * treeRadius;
-
-        // Skip if too close to the hive tree
-        if (hiveTree) {
-          const distToHiveTree = Math.sqrt(
-            Math.pow(x - hiveTree.position.x, 2) +
-            Math.pow(z - hiveTree.position.z, 2)
-          );
-
-          if (distToHiveTree > 10) {
-            createTree(x, z);
-          }
-        }
-      }
-
-      // Create the grass if function exists
-      if (typeof createGrass === 'function') {
-        grass = createGrass();
-      }
-
-      console.log("Initial trees and hive created");
-    } catch (error) {
-      console.error("Error creating initial trees and hive:", error);
+  try {
+    if (typeof createTree !== 'function') {
+      console.error("createTree function is not defined!");
+      return;
     }
+
+    const treeCount = 30;
+    const treeRadius = 45;
+
+    hiveTree = createTree(2, 1, true);
+    if (!hiveTree) { console.error("Failed to create hive tree!"); return; }
+
+    if (typeof createHive === 'function') createHive();
+    else console.error("createHive function is not defined!");
+
+    for (let i = 0; i < treeCount; i++) {
+      const angle = (i / treeCount) * Math.PI * 2;
+      const x = Math.cos(angle) * treeRadius;
+      const z = Math.sin(angle) * treeRadius;
+      if (hiveTree) {
+        const dist = Math.sqrt(Math.pow(x - hiveTree.position.x, 2) + Math.pow(z - hiveTree.position.z, 2));
+        if (dist > 10) createTree(x, z);
+      }
+    }
+
+    if (typeof createGrass === 'function') grass = createGrass();
+
+    console.log("Initial trees and hive created");
+  } catch (error) {
+    console.error("Error creating initial trees and hive:", error);
   }
+}
 
-  // Main animation loop
-  function animate() {
-    requestAnimationFrame(animate);
+// Main animation loop with delta time
+let _lastFrameTime = performance.now();
 
-    // Update bee movement
-    updateBeeMovement();
+function animate() {
+  requestAnimationFrame(animate);
 
-    // Update flowers
-    updateBeeCellAndManageFlowers();
-    
+  const now = performance.now();
+  const dt  = Math.min((now - _lastFrameTime) / 1000, 0.1); // seconds, capped at 100ms
+  _lastFrameTime = now;
 
-    // Render scene
-    renderer.render(scene, camera);  }
+  // Core bee movement
+  updateBeeMovement();
+
+  // Flower management
+  updateBeeCellAndManageFlowers();
+
+  // --- New systems ---
+  if (typeof levelManager !== 'undefined')  levelManager.tick(dt);
+  if (typeof enemyManager !== 'undefined')  enemyManager.update(dt);
+  if (typeof hiveManager  !== 'undefined')  hiveManager.updateNPCBees(dt);
+  if (typeof updateQueenBee === 'function') updateQueenBee(dt);
+
+  // Minimap update (every frame is fine — it's a small canvas)
+  if (typeof gameHUD !== 'undefined') gameHUD.updateMinimap();
+
+  renderer.render(scene, camera);
+}
     // Start the game
   function startGame() {
     console.log("StartGame called, initializing...");

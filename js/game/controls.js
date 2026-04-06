@@ -98,6 +98,10 @@ function onKeyDown(event) {
     event.preventDefault();
     handleAction();
   }
+  // Guard sting
+  if (event.key.toLowerCase() === 'e' && isPointerLocked) {
+    if (typeof enemyManager !== 'undefined') enemyManager.playerSting();
+  }
 }
 
 function onKeyUp(event) {
@@ -353,16 +357,29 @@ function updateBeeMovement() {
       if (keysPressed["f"] && bee && bee.position) bee.position.y -= MOVE_SPEED * (keysPressed["shift"] ? 1.8 : 1);
     }
     
+    // Block movement if bee is dead
+    if (beeHP <= 0) return;
+
     // Apply movement if there is any direction
     if (moveDirection.length() > 0 && bee) {
       // Normalize movement direction
       moveDirection.normalize();
-      
+
+      // Sprinting with Shift — drain stamina
+      const wantSprint = !!keysPressed["shift"];
+      isSprinting = wantSprint && beeStamina > STAMINA_SPRINT_THRESHOLD;
+      if (isSprinting) {
+        // dt approximation — use 1/60 as fallback
+        beeStamina = Math.max(0, beeStamina - STAMINA_DRAIN_RATE / 60);
+        if (beeStamina <= 0) isSprinting = false;
+      }
+
       // Add a multiplier for diagonal movement
-      const currentSpeed = MOVE_SPEED * (keysPressed["shift"] ? 1.8 : 1);
+      const currentSpeed = (effectiveSpeed || MOVE_SPEED) * (isSprinting ? 1.8 : 1);
       
       // Set bee's local direction and apply speed
       moveVelocity.copy(moveDirection).multiplyScalar(currentSpeed);
+
       
       // Save current position before movement
       const prevPosition = bee.position.clone();

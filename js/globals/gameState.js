@@ -10,7 +10,11 @@ const gameState = {
     honeyCollected: 0,
     highScore: 0,
     playTime: 0,
-    lastPlayed: null
+    lastPlayed: null,
+    // NEW
+    highestLevel: 1,
+    totalEnemiesDefeated: 0,
+    beeRole: 'worker',
   },
   
   // Multiplayer-related data

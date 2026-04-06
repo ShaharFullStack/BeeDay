@@ -19,12 +19,18 @@ function logPlayerNameInfo(prefix = "DEBUG") {
 
 // Update UI elements with current game state
 function updateUI() {
-  document.getElementById("nectar-carried").textContent = nectarCarried;
-  document.getElementById("nectar-capacity").textContent = NECTAR_CAPACITY;
-  document.getElementById("honey-in-hive").textContent = honeyInHive;
-  
+  const nectarEl   = document.getElementById("nectar-carried");
+  const capacityEl = document.getElementById("nectar-capacity");
+  const honeyEl    = document.getElementById("honey-in-hive");
+  if (nectarEl)   nectarEl.textContent   = nectarCarried;
+  if (capacityEl) capacityEl.textContent = effectiveCapacity || NECTAR_CAPACITY;
+  if (honeyEl)    honeyEl.textContent    = honeyInHive;
+
   // Update player status if gameState is available
   updateAllPlayerNames();
+
+  // Refresh gamification HUD
+  if (typeof gameHUD !== 'undefined') gameHUD.update();
 }
 
 // Function to update all player name displays throughout the UI
@@ -76,6 +82,8 @@ function handlePointerLockChange() {
     document.mozPointerLockElement ||
     document.webkitPointerLockElement;
   isPointerLocked = !!pointerLockElement;
+  const mobileButtons = document.getElementById("mobile-controls");
+  if (mobileButtons) mobileButtons.style.display = isPointerLocked ? "none" : "flex";
   document.getElementById("pointer-lock-info").style.display = isPointerLocked
     ? "none"
     : "block";
@@ -91,10 +99,11 @@ function handlePointerLockChange() {
 
 // Handle action (collect nectar or deposit honey)
 function handleAction() {
+  if (beeHP <= 0) return; // can't act when dead
+  const cap = (typeof effectiveCapacity !== 'undefined') ? effectiveCapacity : NECTAR_CAPACITY;
   let harvested = false;
-  if (nectarCarried < NECTAR_CAPACITY) {
+  if (nectarCarried < cap) {
     for (const flower of flowers) {
-      // Iterate over currently active flowers
       if (flower.userData.hasNectar) {
         const nectarWorldPosition = new THREE.Vector3();
         flower.userData.nectarCenterMesh.getWorldPosition(nectarWorldPosition);
@@ -105,10 +114,7 @@ function handleAction() {
           flower.userData.petalMaterial.color.set(0x888888);
           flower.userData.nectarCenterMesh.scale.set(0.2, 0.2, 0.2);
           soundEffects.playSound("collect");
-          showMessage(
-            `Nectar collected! (${nectarCarried}/${NECTAR_CAPACITY})`,
-            1500
-          );
+          showMessage(`Nectar collected! (${nectarCarried}/${cap})`, 1500);
           harvested = true;
           updateUI();
           break;
@@ -123,33 +129,31 @@ function handleAction() {
         honeyInHive += nectarCarried;
         const deposited = nectarCarried;
         nectarCarried = 0;
-        
-        // Update game state for multiplayer tracking if available
+
+        // Repair hive slightly on deposit
+        const maxHiveHp = HIVE_MAX_HP + (upgradeState.hiveHP || 0) * 50;
+        hiveHP = Math.min(hiveHP + HIVE_REGEN_PER_HONEY * deposited, maxHiveHp);
+
+        // Update game state for multiplayer tracking
         if (window.gameState && typeof window.gameState.updateHoney === 'function') {
           window.gameState.updateHoney(deposited);
         }
         soundEffects.playSound("deposit");
-        showMessage(
-          `Deposited ${deposited} nectar! Total honey: ${honeyInHive}`,
-          2000
-        );
-        // Regrow some flowers (chance based)
+        showMessage(`🍯 Deposited ${deposited} nectar! Total: ${honeyInHive}`, 2000);
+        // Regrow some flowers
         flowers.forEach((f) => {
           if (!f.userData.hasNectar && Math.random() < 0.25) {
-            // Slightly lower chance to regrow
             f.userData.hasNectar = true;
             f.userData.petalMaterial.color.set(f.userData.originalPetalColorHex);
-            f.userData.nectarCenterMesh.scale.copy(
-              f.userData.originalNectarScale
-            );
+            f.userData.nectarCenterMesh.scale.copy(f.userData.originalNectarScale);
           }
         });
         updateUI();
       } else {
         showMessage("No nectar to deposit!", 1500);
       }
-    } else if (nectarCarried >= NECTAR_CAPACITY) {
-      showMessage("Nectar pouch is full! Return to the hive.", 2000);
+    } else if (nectarCarried >= cap) {
+      showMessage(`Nectar pouch full (${cap})! Return to hive.`, 2000);
     } else {
       // Check if any harvestable flowers are nearby if no action was taken
       let foundFlower = false;
